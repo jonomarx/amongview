@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+		<script>
+			let chart = null;
+			async function f(teamNum) {
+				const params = new URLSearchParams();
+				params.append("teamNum", teamNum);
+				const response = await fetch("/sql", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					credentials: 'include',
+					body: params
+				});
+				var text = await response.json();
+				
+				const speaker = [];
+				const amp = [];
+				var i = 0;
+				text.forEach(item => {
+					speaker[i] = {x:i,y:item.SpeakerNotesAmped+item.SpeakerNotesUnamped};
+					amp[i] = {x:i,y:item.AmpNotes};
+					i++;
+				});
+				
+				if(chart == null) {
+					chart = new Chart("myChart", {
+						type: "line",
+					});
+				}
+				
+				chart.data.datasets[chart.data.datasets.length] = {
+					pointRadius: 4,
+					borderColor: "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")",
+					data: speaker,
+					label: teamNum + " speaker"
+				};
+				chart.data.datasets[chart.data.datasets.length] = {
+					pointRadius: 4,
+					borderColor: "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")", 
+					data: amp,
+					label: teamNum + " amp"
+				};
+				
+				var size = 0;
+				for(var i = 0; i < chart.data.datasets.length; i++) {
+					if(chart.data.datasets[i].data.length > size) size = chart.data.datasets[i].data.length;
+				}
+				x = [];
+				for(var i = 0; i < size; i++) {
+					x[i] = i;
+				}
+				chart.data.labels = x;
+				chart.update();
+			}
+			
+			function buttonClick() {
+				f(document.getElementById("team").value);
+			}
+			
+			f(948);
+		</script>
+	</head>
+	
+	<body>
+		</h1>Hello, World!</h1><br>
+		<label for="team">Team #</label>
+		<input type="text" name="team" id="team" value="948">
+		<button onclick="buttonClick()">Load!</button><br>
+		<button onclick = "chart.destroy();chart=null">Destroy chart</button>
+		<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+	</body>
+</html>
