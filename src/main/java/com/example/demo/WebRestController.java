@@ -33,10 +33,17 @@ public class WebRestController {
 		return mapper.writeValueAsString(data);
 	}
 	
-	@PostMapping(value="/sql",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/sql",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> sql(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		String result = mapper.writeValueAsString(objective.findAllByTeamNumberOrderByMatchNumberAsc(teamNum));
+		return ResponseEntity.of(Optional.of(result));
+	}
+	
+	@GetMapping(value="/qual",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> qual(@RequestParam("teamNum") int teamNum, @RequestParam("qual") int qual) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String result = mapper.writeValueAsString(objective.findByTeamNumberAndMatchNumber(teamNum, qual));
 		return ResponseEntity.of(Optional.of(result));
 	}
 	

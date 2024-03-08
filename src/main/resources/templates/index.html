@@ -12,12 +12,18 @@
 			.tabcontent {
 				display: none;
 			}
+			
+			.column {
+				float: left;
+				padding: 5px 5px;
+			}
 		</style>
 		
 		<script src="/Chart.js"></script>
 		<script>
 			let individualChart = null;
 			let allChart = null;
+			let latestTeam = null;
 			
 			function openTab(evt, tabname) {
 				tabcontent = document.getElementsByClassName("tabcontent");
@@ -56,7 +62,7 @@
 			
 			async function initAll(operation, sort) {
 				if(dataFuncs[operation] == null) return;
-				const response = await fetch("teams", {
+				const response = await fetch("/teams", {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
@@ -76,16 +82,14 @@
 				
 				for(i = 0; i < text.length; i++) {
 					team = text[i];
-					
 					params = new URLSearchParams();
 					params.append("teamNum", team);
-					const reply = await fetch("/sql", {
-						method: 'POST',
+					const reply = await fetch("/sql?"+params.toString(), {
+						method: 'GET',
 						headers: {
 							'Content-Type': 'application/x-www-form-urlencoded',
 						},
 						credentials: 'include',
-						body: params,
 					});
 					teamData = await reply.json();
 					
@@ -118,15 +122,15 @@
 			
 			async function updateIndividual(teamNum, operation) {
 				if(dataFuncs[operation] == null) return;
+				latestTeam = teamNum;
 				const params = new URLSearchParams();
 				params.append("teamNum", teamNum);
-				const response = await fetch("/sql", {
-					method: 'POST',
+				const response = await fetch("/sql?"+params.toString(), {
+					method: 'GET',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
 					},
 					credentials: 'include',
-					body: params
 				});
 				var text = await response.json();
 				
@@ -151,6 +155,9 @@
 				if(individualChart == null) {
 					individualChart = new Chart("individualChart", {
 						type: "bar",
+						options: {
+							onClick: clickOnIndividualChart,
+						},
 					});
 				}
 				
@@ -184,6 +191,59 @@
 			
 			function loadAll() {
 				initAll(document.getElementById("allSelector").value, document.getElementById("sortTeams").checked);
+			}
+			
+			async function clickOnIndividualChart(event) {
+				var points = individualChart.getElementsAtEventForMode(event, 'nearest', {
+					intersect: true
+				}, true);
+				if(points.length) {
+					firstPoint = points[0];
+					label = individualChart.data.labels[firstPoint._index];
+					value = individualChart.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+					
+					params = new URLSearchParams();
+					params.append("teamNum", latestTeam);
+					params.append("qual", value.x);
+					const response = await fetch("/qual?"+params.toString(), {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						credentials: 'include',
+					});
+					data = await response.json();
+					
+					document.getElementById("qualNum").textContent = data.TeamNumber + "'s Qualification " + data.MatchNumber;
+					document.getElementById("alliance").textContent = data.AllianceColor + " " + data.DriverStation;
+					document.getElementById("replay").textContent = "Scouted " + (data.Replay ? "From VOD" : "Live");
+					document.getElementById("scouter").textContent = "Scouted By: " + data.ScouterName
+					document.getElementById("quality").textContent = "Data Quality: " + data.DataQuality;
+					
+					document.getElementById("coords").textContent = data.StartPos;
+					document.getElementById("preload").textContent = (data.Preload ? "" : "Not ") + "Preloaded";
+					document.getElementById("eStop").textContent = "Did " + (data.AStop ? "" : "not ") + "Emergency Stop";
+					document.getElementById("leftWing").textContent = "Did " + (data.LeftWing ? "" : "not ") + "Leave Wing";
+					document.getElementById("notesCenter").textContent = "Grabbed " + data.AutoPickUpCenter + " Notes from Center";
+					document.getElementById("notesWing").textContent = "Grabbed " + data.AutoPickUpWing + " Notes from Wing";
+					document.getElementById("autoSpeaker").textContent = "Shot " + data.AutoSpeaker + " Notes into Speaker"; 
+					document.getElementById("autoAmp").textContent = "Shot " + data.AutoAmp + " Notes into Amp";
+					
+					document.getElementById("coop").textContent = "Did " + (data.Coopertition ? "" : "not ") + "trigger Coopertition";
+					document.getElementById("feeder").textContent = "Is " + (data.Feeder ? "" : "not ") + "a Feeder";
+					document.getElementById("groundPickup").textContent = "Intaked " + data.PickUpGround + " Notes from Ground";
+					document.getElementById("sourcePickup").textContent = "Intaked " + data.PickUpSource + " Notes from Source";
+					document.getElementById("unampedSpeaker").textContent = "Shot " + data.SpeakerNotesUnamped + " Notes into an Unamped Speaker";
+					document.getElementById("ampedSpeaker").textContent = "Shot " + data.SpeakerNotesAmped + " Notes into an Amped Speaker";
+					document.getElementById("amps").textContent = "Put " + data.AmpNotes + " Notes into an Amp";
+					
+					document.getElementById("onstage").textContent = (data.Onstage ? "" : "Not ") + "Onstage";
+					document.getElementById("park").textContent = (data.Park ? "" : "Not ") + "Parked";
+					document.getElementById("spotlight").textContent = (data.Spotlight ? "" : "Not ") + "Spotlit";
+					document.getElementById("trap").textContent = "Did " + (data.Trap ? "" : "not ") + "Play Trap";
+					
+					document.getElementById("comments").textContent = data.Comments;
+				}
 			}
 			
 			updateIndividual(948, "TeleSpeaker");
@@ -232,34 +292,87 @@
 			<!-- individual robot screen -->
 			<div id="individual" class="tabcontent">
 				<h1>Individual Team</h1><br>
-				<label for="team">Team #</label>
-				<input type="text" name="team" id="team" value="948">
-				<input type="text" list="selectData" id="individualSelector" />
-					<datalist id="selectData">
-						<option>V AUTOS V</option>
-						<option>AutoSpeaker</option>
-						<option>AutoAmp</option>
-						<option>AutoScores</option>
-						<option>AutoWing</option>
-						<option>AutoCenter</option>
-						<option>AutoPickups</option>
-						<option>AutoOuttakeEfficiency</option>
-						<option>V TELE-OP V</option>
-						<option>TeleSpeakerAmped</option>
-						<option>TeleSpeakerUnamped</option>
-						<option>TeleSpeaker</option>
-						<option>TeleAmp</option>
-						<option>TeleScores</option>
-						<option>TeleGround</option>
-						<option>TeleSource</option>
-						<option>TelePickups</option>
-						<option>TeleOuttakeEfficiency</option>
-						<option>V ENDGAME V</option>
-					</datalist>
-				<button onclick="loadIndividual()">Load!</button>
-				<br>
-				<button onclick = "individualChart.destroy();individualChart=null">Destroy Chart</button>
-				<canvas id="individualChart" style="width:100%;max-width:700px"></canvas>
+				<div class="column">
+					<h2>Chart Data</h2><br>
+					<label for="team">Team #</label>
+					<input type="text" name="team" id="team" value="948">
+					<input type="text" list="selectData" id="individualSelector" />
+						<datalist id="selectData">
+							<option>V AUTOS V</option>
+							<option>AutoSpeaker</option>
+							<option>AutoAmp</option>
+							<option>AutoScores</option>
+							<option>AutoWing</option>
+							<option>AutoCenter</option>
+							<option>AutoPickups</option>
+							<option>AutoOuttakeEfficiency</option>
+							<option>V TELE-OP V</option>
+							<option>TeleSpeakerAmped</option>
+							<option>TeleSpeakerUnamped</option>
+							<option>TeleSpeaker</option>
+							<option>TeleAmp</option>
+							<option>TeleScores</option>
+							<option>TeleGround</option>
+							<option>TeleSource</option>
+							<option>TelePickups</option>
+							<option>TeleOuttakeEfficiency</option>
+							<option>V ENDGAME V</option>
+						</datalist>
+					<button onclick="loadIndividual()">Load!</button>
+					<br>
+					<button onclick = "individualChart.destroy();individualChart=null">Destroy Chart</button>
+					<canvas id="individualChart" style="width:100%;max-width:700px"></canvas>
+				</div><br>
+				<div>
+					<!-- misc data -->
+					<div class="column">
+						<h3 id="qualNum">Qualification #</h3>
+						<h4 id="alliance">(Alliance) (1/2/3)</h4>
+						<h4 id="replay">Scouted (Live/From VOD)</h4>
+						<h4 id="scouter">Scouted By: </h4>
+						<h4 id="quality">Data Quality: </h4>
+					</div>
+					
+					<!-- auto -->
+					<div class="column">
+						<h3>Auto</h3>
+						<h4 id="coords">Coords</h4>
+						<h4 id="preload">(Not) Preloaded: </h4>
+						<h4 id="eStop">Did (Not) Emergency Stop</h4>
+						<h4 id="leftWing">Did (Not) Leave Wing</h4>
+						<h4 id="notesCenter">Notes from Center: </h4>
+						<h4 id="notesWing">Notes from Wing: </h4>
+						<h4 id="autoSpeaker">Speaker shots: </h4>
+						<h4 id="autoAmp">Amp shots: </h4>
+					</div>
+					
+					<!-- tele-op -->
+					<div class="column">
+						<h3>Tele-Op</h3>
+						<h4 id="coop">Did (Not) Trigger Coopertition</h4>
+						<h4 id="feeder">Is (Not) a Feeder</h4>
+						<h4 id="groundPickup"># notes picked up from ground</h4>
+						<h4 id="sourcePickup"># notes picked up from source</h4>
+						<h4 id="unampedSpeaker"># speaker shots unamped</h4>
+						<h4 id="ampedSpeaker"># speaker shots amped</h4>
+						<h4 id="amps"># amp shots</h4>
+					</div>
+					
+					<!-- endgame -->
+					<div class="column">
+						<h3>Endgame</h3>
+						<h4 id="onstage">(Not) Onstage</h4>
+						<h4 id="park">(Not) Parked</h4>
+						<h4 id="spotlight">(Not) Spotlit</h4>
+						<h4 id="trap">(Didn't) Play Trap</h4>
+					</div>
+					
+					<!-- comments -->
+					<div class="column">
+						<h3>Comments</h3>
+						<p id="comments"></p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>
