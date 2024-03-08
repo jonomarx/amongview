@@ -216,7 +216,7 @@
 					
 					document.getElementById("qualNum").textContent = data.TeamNumber + "'s Qualification " + data.MatchNumber;
 					document.getElementById("alliance").textContent = data.AllianceColor + " " + data.DriverStation;
-					document.getElementById("replay").textContent = "Scouted " + (data.Replay ? "From VOD" : "Live");
+					document.getElementById("replay").textContent = (data.Replay ? "Replayed" : "Normal") + " Match";
 					document.getElementById("scouter").textContent = "Scouted By: " + data.ScouterName
 					document.getElementById("quality").textContent = "Data Quality: " + data.DataQuality;
 					
@@ -328,7 +328,7 @@
 					<div class="column">
 						<h3 id="qualNum">Qualification #</h3>
 						<h4 id="alliance">(Alliance) (1/2/3)</h4>
-						<h4 id="replay">Scouted (Live/From VOD)</h4>
+						<h4 id="replay">(Normal/Replayed) Match</h4>
 						<h4 id="scouter">Scouted By: </h4>
 						<h4 id="quality">Data Quality: </h4>
 					</div>
