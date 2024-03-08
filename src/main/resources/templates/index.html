@@ -4,7 +4,28 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 		<script>
 			let chart = null;
-			async function f(teamNum) {
+			
+			let dataFuncs = {};
+			dataFuncs["AutoSpeaker"] = function(item) {return item.AutoSpeaker};
+			dataFuncs["AutoAmp"] = function(item) {return item.AutoAmp};
+			dataFuncs["AutoScores"] = function(item) {return item.AutoSpeaker + item.AutoAmp};
+			dataFuncs["AutoWing"] = function(item) {return item.AutoPickUpWing};
+			dataFuncs["AutoCenter"] = function(item) {return item.AutoPickUpCenter};
+			dataFuncs["AutoPickups"] = function(item) {return item.AutoPickUpWing + item.AutoPickUpCenter};
+			dataFuncs["AutoOuttakeEfficiency"] = function(item) {return (item.AutoSpeaker+item.AutoAmp) / (item.AutoPickUpWing+item.AutoPickUpCenter+1)};
+			
+			dataFuncs["TeleSpeakerAmped"] = function(item) {return item.SpeakerNotesAmped};
+			dataFuncs["TeleSpeakerUnamped"] = function(item) {return item.SpeakerNotesUnamped};
+			dataFuncs["TeleSpeaker"] = function(item) {return item.SpeakerNotesAmped + item.SpeakerNotesUnamped};
+			dataFuncs["TeleAmp"] = function(item) {return item.AmpNotes};
+			dataFuncs["TeleScores"] = function(item) {return item.SpeakerNotesAmped + item.SpeakerNotesUnamped + item.AmpNotes};
+			dataFuncs["TeleGround"] = function(item) {return item.PickUpGround};
+			dataFuncs["TeleSource"] = function(item) {return item.PickUpSource};
+			dataFuncs["TelePickups"] = function(item) {return item.PickUpGround + item.PickUpSource};
+			dataFuncs["TeleOuttakeEfficiency"] = function(item) {return (item.SpeakerNotesAmped + item.SpeakerNotesUnamped + item.AmpNotes) / (item.PickUpGround + item.PickUpSource)};
+			
+			async function f(teamNum, operation) {
+				if(dataFuncs[operation] == null) return;
 				const params = new URLSearchParams();
 				params.append("teamNum", teamNum);
 				const response = await fetch("/sql", {
@@ -17,51 +38,41 @@
 				});
 				var text = await response.json();
 				
-				const speaker = [];
-				const amp = [];
+				const data = [];
+				const x = [];
 				var i = 0;
 				text.forEach(item => {
-					speaker[i] = {x:i,y:item.SpeakerNotesAmped+item.SpeakerNotesUnamped};
-					amp[i] = {x:i,y:item.AmpNotes};
+					data[i] = {x:item.MatchNumber,y:dataFuncs[operation](item)};
+					x[i] = item.MatchNumber;
 					i++;
 				});
 				
 				if(chart == null) {
 					chart = new Chart("myChart", {
-						type: "line",
+						type: "bar"
+						/*type: "line"*/
 					});
 				}
 				
+				color = "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
 				chart.data.datasets[chart.data.datasets.length] = {
 					pointRadius: 4,
-					borderColor: "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")",
-					data: speaker,
-					label: teamNum + " speaker"
-				};
-				chart.data.datasets[chart.data.datasets.length] = {
-					pointRadius: 4,
-					borderColor: "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")", 
-					data: amp,
-					label: teamNum + " amp"
+					/*pointBackgroundColor: color,
+					borderColor: color,*/
+					backgroundColor: color,
+					data: data,
+					label: teamNum + " " + operation
 				};
 				
-				var size = 0;
-				for(var i = 0; i < chart.data.datasets.length; i++) {
-					if(chart.data.datasets[i].data.length > size) size = chart.data.datasets[i].data.length;
-				}
-				x = [];
-				for(var i = 0; i < size; i++) {
-					x[i] = i;
-				}
 				chart.data.labels = x;
 				chart.update();
 			}
 			
 			function buttonClick() {
-				f(document.getElementById("team").value);
+				f(document.getElementById("team").value, document.getElementById("selector").value);
 			}
 			
-			f(948);
+			f(948, "TeleSpeaker");
 		</script>
 	</head>
 	
@@ -69,7 +80,30 @@
 		</h1>Hello, World!</h1><br>
 		<label for="team">Team #</label>
 		<input type="text" name="team" id="team" value="948">
-		<button onclick="buttonClick()">Load!</button><br>
+		<input type="text" list="selectData" id="selector" />
+			<datalist id="selectData">
+				<option>V AUTOS V</option>
+				<option>AutoSpeaker</option>
+				<option>AutoAmp</option>
+				<option>AutoScores</option>
+				<option>AutoWing</option>
+				<option>AutoCenter</option>
+				<option>AutoPickups</option>
+				<option>AutoOuttakeEfficiency</option>
+				<option>V TELE-OP V</option>
+				<option>TeleSpeakerAmped</option>
+				<option>TeleSpeakerUnamped</option>
+				<option>TeleSpeaker</option>
+				<option>TeleAmp</option>
+				<option>TeleScores</option>
+				<option>TeleGround</option>
+				<option>TeleSource</option>
+				<option>TelePickups</option>
+				<option>TeleOuttakeEfficiency</option>
+				<option>V ENDGAME V</option>
+			</datalist>
+		<button onclick="buttonClick()">Load!</button>
+		<br>
 		<button onclick = "chart.destroy();chart=null">Destroy chart</button>
 		<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
 	</body>
