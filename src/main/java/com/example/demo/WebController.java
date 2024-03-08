@@ -15,4 +15,9 @@ public class WebController {
 	public String index(Model model) {
 		return "index.html";
 	}
+	
+	@GetMapping("/Chart.js") 
+	public String chart() {
+		return "Chart.js";
+	}
 }

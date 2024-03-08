@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ObjectiveDatabase extends JpaRepository<ObjectiveData, Long> {
 	public List<ObjectiveData> findAllByTeamNumberOrderByMatchNumberAsc(int teamNumber);
+	
+	@Query("SELECT DISTINCT od.teamNumber FROM ObjectiveData od ORDER BY od.teamNumber ASC")
+	public List<Integer> findAllTeams();
 }

@@ -40,6 +40,13 @@ public class WebRestController {
 		return ResponseEntity.of(Optional.of(result));
 	}
 	
+	@GetMapping(value="/teams", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> teams() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String result = mapper.writeValueAsString(objective.findAllTeams());
+		return ResponseEntity.of(Optional.of(result));
+	}
+	
 	@PostMapping("/sqlRaw")
 	public String sqlRaw(@RequestParam String cmd) {
 		return "";

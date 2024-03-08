@@ -1,9 +1,39 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 	<head>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+		
+		<style>
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ddd;
+				background-color: #fff;
+			}
+			
+			.tabcontent {
+				display: none;
+			}
+		</style>
+		
+		<script src="/Chart.js"></script>
 		<script>
-			let chart = null;
+			let individualChart = null;
+			let allChart = null;
+			
+			function openTab(evt, tabname) {
+				tabcontent = document.getElementsByClassName("tabcontent");
+				for(i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = "none";
+				}
+				
+				tablinks = document.getElementsByClassName("tablinks");
+				for(i = 0; i < tablinks.length; i++) {
+					tablinks[i].className = tablinks[i].classname.replaceAll(' active', "");
+					console.log(tablinks[i].className);
+				}
+				
+				document.getElementById(tabname).style.display = "block";
+				evt.currentTarget.className += " active";
+			}
 			
 			let dataFuncs = {};
 			dataFuncs["AutoSpeaker"] = function(item) {return item.AutoSpeaker};
@@ -24,7 +54,69 @@
 			dataFuncs["TelePickups"] = function(item) {return item.PickUpGround + item.PickUpSource};
 			dataFuncs["TeleOuttakeEfficiency"] = function(item) {return (item.SpeakerNotesAmped + item.SpeakerNotesUnamped + item.AmpNotes) / (item.PickUpGround + item.PickUpSource)};
 			
-			async function f(teamNum, operation) {
+			async function initAll(operation, sort) {
+				if(dataFuncs[operation] == null) return;
+				const response = await fetch("teams", {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					credentials: 'include',
+				});
+				var text = await response.json();
+				
+				if(allChart == null) {
+					allChart = new Chart("allChart", {
+						type: "bar",
+					});
+				}
+				
+				data = [];
+				color = "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
+				
+				for(i = 0; i < text.length; i++) {
+					team = text[i];
+					
+					params = new URLSearchParams();
+					params.append("teamNum", team);
+					const reply = await fetch("/sql", {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						credentials: 'include',
+						body: params,
+					});
+					teamData = await reply.json();
+					
+					total = 0;
+					teamData.forEach(item => total += dataFuncs[operation](item));
+					average = total / teamData.length;
+					data[i] = {x:team,y:average};
+				}
+				
+				allChart.data.labels = text;
+				
+				if(sort) {
+					altLabels = [];
+					data.sort((a,b) => {
+						return b.y - a.y;
+					});
+					for(i = 0; i < data.length; i++) altLabels[i] = data[i].x;
+					allChart.data.labels = altLabels;
+				}
+				
+				allChart.data.datasets[allChart.data.datasets.length] = {
+					pointRadius: 0,
+					backgroundColor: color,
+					data: data,
+					label: "Average " + operation,
+					order: 1,
+				};
+				allChart.update();
+			}
+			
+			async function updateIndividual(teamNum, operation) {
 				if(dataFuncs[operation] == null) return;
 				const params = new URLSearchParams();
 				params.append("teamNum", teamNum);
@@ -38,73 +130,137 @@
 				});
 				var text = await response.json();
 				
-				const data = [];
-				const x = [];
+				data = [];
+				x = [];
 				var i = 0;
+				
+				total = 0;
 				text.forEach(item => {
 					data[i] = {x:item.MatchNumber,y:dataFuncs[operation](item)};
 					x[i] = item.MatchNumber;
+					total += dataFuncs[operation](item);
 					i++;
 				});
 				
-				if(chart == null) {
-					chart = new Chart("myChart", {
-						type: "bar"
-						/*type: "line"*/
+				average = total / data.length;
+				avg = [];
+				for(i = 0; i < data.length; i++) {
+					avg[i] = average;
+				}
+				
+				if(individualChart == null) {
+					individualChart = new Chart("individualChart", {
+						type: "bar",
 					});
 				}
 				
 				color = "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
-				chart.data.datasets[chart.data.datasets.length] = {
+				individualChart.data.datasets[individualChart.data.datasets.length] = {
 					pointRadius: 4,
 					/*pointBackgroundColor: color,
 					borderColor: color,*/
 					backgroundColor: color,
 					data: data,
-					label: teamNum + " " + operation
+					label: teamNum + " " + operation,
+					order: 2
 				};
+				individualChart.data.datasets[individualChart.data.datasets.length] = {
+					pointRadius: 0,
+					data: avg,
+					pointBackgroundColor: color,
+					borderColor: color,
+					label: teamNum + " " + operation + " average",
+					type: "line",
+					order: 1
+				}
 				
-				chart.data.labels = x;
-				chart.update();
+				individualChart.data.labels = x;
+				individualChart.update();
 			}
 			
-			function buttonClick() {
-				f(document.getElementById("team").value, document.getElementById("selector").value);
+			function loadIndividual() {
+				updateIndividual(document.getElementById("team").value, document.getElementById("individualSelector").value);
 			}
 			
-			f(948, "TeleSpeaker");
+			function loadAll() {
+				initAll(document.getElementById("allSelector").value, document.getElementById("sortTeams").checked);
+			}
+			
+			updateIndividual(948, "TeleSpeaker");
+			initAll("TeleSpeaker", false);
 		</script>
 	</head>
 	
 	<body>
-		</h1>Hello, World!</h1><br>
-		<label for="team">Team #</label>
-		<input type="text" name="team" id="team" value="948">
-		<input type="text" list="selectData" id="selector" />
-			<datalist id="selectData">
-				<option>V AUTOS V</option>
-				<option>AutoSpeaker</option>
-				<option>AutoAmp</option>
-				<option>AutoScores</option>
-				<option>AutoWing</option>
-				<option>AutoCenter</option>
-				<option>AutoPickups</option>
-				<option>AutoOuttakeEfficiency</option>
-				<option>V TELE-OP V</option>
-				<option>TeleSpeakerAmped</option>
-				<option>TeleSpeakerUnamped</option>
-				<option>TeleSpeaker</option>
-				<option>TeleAmp</option>
-				<option>TeleScores</option>
-				<option>TeleGround</option>
-				<option>TeleSource</option>
-				<option>TelePickups</option>
-				<option>TeleOuttakeEfficiency</option>
-				<option>V ENDGAME V</option>
-			</datalist>
-		<button onclick="buttonClick()">Load!</button>
-		<br>
-		<button onclick = "chart.destroy();chart=null">Destroy chart</button>
-		<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+		<!-- navigator -->
+		<div class="tab">
+			<button class="tabLinks" onclick="openTab(event, 'allTeams')">All Teams</button>
+			<button class="tabLinks" onclick="openTab(event, 'individual')">Individual</button>
+		
+			<!-- all robots screen -->
+			<div id="allTeams" class="tabcontent">
+				<h1>All Robots</h1><br>
+				<input type="text" list="selectDataAll" id="allSelector" />
+					<datalist id="selectDataAll">
+						<option>V AUTOS V</option>
+						<option>AutoSpeaker</option>
+						<option>AutoAmp</option>
+						<option>AutoScores</option>
+						<option>AutoWing</option>
+						<option>AutoCenter</option>
+						<option>AutoPickups</option>
+						<option>AutoOuttakeEfficiency</option>
+						<option>V TELE-OP V</option>
+						<option>TeleSpeakerAmped</option>
+						<option>TeleSpeakerUnamped</option>
+						<option>TeleSpeaker</option>
+						<option>TeleAmp</option>
+						<option>TeleScores</option>
+						<option>TeleGround</option>
+						<option>TeleSource</option>
+						<option>TelePickups</option>
+						<option>TeleOuttakeEfficiency</option>
+						<option>V ENDGAME V</option>
+					</datalist>
+				<button onclick="loadAll()">Load!</button>
+				<label for="sortTeams">Sort Teams?</label>
+				<input type="checkbox" id="sortTeams"><br>
+				<button onclick = "allChart.destroy();allChart=null">Destroy Chart</button>
+				<canvas id="allChart" style="width:100%;max-width:1000px"></canvas>
+			</div>
+			
+			<!-- individual robot screen -->
+			<div id="individual" class="tabcontent">
+				<h1>Individual Team</h1><br>
+				<label for="team">Team #</label>
+				<input type="text" name="team" id="team" value="948">
+				<input type="text" list="selectData" id="individualSelector" />
+					<datalist id="selectData">
+						<option>V AUTOS V</option>
+						<option>AutoSpeaker</option>
+						<option>AutoAmp</option>
+						<option>AutoScores</option>
+						<option>AutoWing</option>
+						<option>AutoCenter</option>
+						<option>AutoPickups</option>
+						<option>AutoOuttakeEfficiency</option>
+						<option>V TELE-OP V</option>
+						<option>TeleSpeakerAmped</option>
+						<option>TeleSpeakerUnamped</option>
+						<option>TeleSpeaker</option>
+						<option>TeleAmp</option>
+						<option>TeleScores</option>
+						<option>TeleGround</option>
+						<option>TeleSource</option>
+						<option>TelePickups</option>
+						<option>TeleOuttakeEfficiency</option>
+						<option>V ENDGAME V</option>
+					</datalist>
+				<button onclick="loadIndividual()">Load!</button>
+				<br>
+				<button onclick = "individualChart.destroy();individualChart=null">Destroy Chart</button>
+				<canvas id="individualChart" style="width:100%;max-width:700px"></canvas>
+			</div>
+		</div>
 	</body>
 </html>
