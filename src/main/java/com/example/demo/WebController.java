@@ -20,4 +20,9 @@ public class WebController {
 	public String chart() {
 		return "Chart.js";
 	}
+	
+	@GetMapping("/index.css")
+	public String css() {
+		return "index.css";
+	}
 }

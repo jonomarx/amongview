@@ -1,0 +1,14 @@
+.tab {
+	overflow: hidden;
+	border: 1px solid #ddd;
+	background-color: #fff;
+}
+
+.tabcontent {
+	display: none;
+}
+
+.column {
+	float: left;
+	padding: 5px 5px;
+}

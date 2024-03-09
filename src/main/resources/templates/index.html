@@ -1,29 +1,11 @@
  <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 	<head>
-		
-		<style>
-			.tab {
-				overflow: hidden;
-				border: 1px solid #ddd;
-				background-color: #fff;
-			}
-			
-			.tabcontent {
-				display: none;
-			}
-			
-			.column {
-				float: left;
-				padding: 5px 5px;
-			}
-		</style>
-		
+		<link rel="stylesheet" type="text/css" href="index.css">
 		<script src="/Chart.js"></script>
 		<script>
 			let individualChart = null;
 			let allChart = null;
-			let latestTeam = null;
 			
 			function openTab(evt, tabname) {
 				tabcontent = document.getElementsByClassName("tabcontent");
@@ -74,6 +56,9 @@
 				if(allChart == null) {
 					allChart = new Chart("allChart", {
 						type: "bar",
+						options: {
+							onClick: clickOnAllChart
+						}
 					});
 				}
 				
@@ -122,7 +107,6 @@
 			
 			async function updateIndividual(teamNum, operation) {
 				if(dataFuncs[operation] == null) return;
-				latestTeam = teamNum;
 				const params = new URLSearchParams();
 				params.append("teamNum", teamNum);
 				const response = await fetch("/sql?"+params.toString(), {
@@ -185,12 +169,39 @@
 				individualChart.update();
 			}
 			
+			async function initTeamDropdown() {
+				const response = await fetch("/teams", {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					credentials: 'include',
+				});
+				var text = await response.json();
+				
+				dataList = document.createElement("datalist");
+				dataList.id = "selectDataTeam";
+				text.forEach(option => {
+					optionElement = document.createElement("option");
+					optionElement.value = option;
+					dataList.appendChild(optionElement);
+				});
+				
+				document.body.appendChild(dataList);
+			}
+			
 			function loadIndividual() {
 				updateIndividual(document.getElementById("team").value, document.getElementById("individualSelector").value);
 			}
 			
 			function loadAll() {
 				initAll(document.getElementById("allSelector").value, document.getElementById("sortTeams").checked);
+			}
+			
+			function jumpToIndividual(teamNum, operation) {
+				individualChart.destroy();
+				individualChart = null;
+				updateIndividual(teamNum, operation);
 			}
 			
 			async function clickOnIndividualChart(event) {
@@ -202,9 +213,12 @@
 					label = individualChart.data.labels[firstPoint._index];
 					value = individualChart.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
 					
+					latestTeam = individualChart.data.datasets[firstPoint._datasetIndex].label.split(' ')[0];
+					
 					params = new URLSearchParams();
 					params.append("teamNum", latestTeam);
-					params.append("qual", value.x);
+					params.append("qual", label);
+					
 					const response = await fetch("/qual?"+params.toString(), {
 						method: 'GET',
 						headers: {
@@ -216,46 +230,62 @@
 					
 					document.getElementById("qualNum").textContent = data.TeamNumber + "'s Qualification " + data.MatchNumber;
 					document.getElementById("alliance").textContent = data.AllianceColor + " " + data.DriverStation;
-					document.getElementById("replay").textContent = (data.Replay ? "Replayed" : "Normal") + " Match";
-					document.getElementById("scouter").textContent = "Scouted By: " + data.ScouterName
+					document.getElementById("replay").textContent = "Replay: " + data.Replay;
+					document.getElementById("scouter").textContent = "Scouter: " + data.ScouterName
 					document.getElementById("quality").textContent = "Data Quality: " + data.DataQuality;
 					
 					document.getElementById("coords").textContent = data.StartPos;
-					document.getElementById("preload").textContent = (data.Preload ? "" : "Not ") + "Preloaded";
-					document.getElementById("eStop").textContent = "Did " + (data.AStop ? "" : "not ") + "Emergency Stop";
-					document.getElementById("leftWing").textContent = "Did " + (data.LeftWing ? "" : "not ") + "Leave Wing";
-					document.getElementById("notesCenter").textContent = "Grabbed " + data.AutoPickUpCenter + " Notes from Center";
-					document.getElementById("notesWing").textContent = "Grabbed " + data.AutoPickUpWing + " Notes from Wing";
-					document.getElementById("autoSpeaker").textContent = "Shot " + data.AutoSpeaker + " Notes into Speaker"; 
-					document.getElementById("autoAmp").textContent = "Shot " + data.AutoAmp + " Notes into Amp";
+					document.getElementById("preload").textContent = "Preloaded: " + data.Preload;
+					document.getElementById("eStop").textContent = "Auto Stop: " + data.AStop;
+					document.getElementById("leftWing").textContent = "Left Wing: " + data.LeftWing;
+					document.getElementById("notesCenter").textContent = "Center Notes: " + data.AutoPickUpCenter;
+					document.getElementById("notesWing").textContent = "Wing Notes " + data.AutoPickUpWing;
+					document.getElementById("autoSpeaker").textContent = "Speaker: " + data.AutoSpeaker;
+					document.getElementById("autoAmp").textContent = "Amp: " + data.AutoAmp;
 					
-					document.getElementById("coop").textContent = "Did " + (data.Coopertition ? "" : "not ") + "trigger Coopertition";
-					document.getElementById("feeder").textContent = "Is " + (data.Feeder ? "" : "not ") + "a Feeder";
-					document.getElementById("groundPickup").textContent = "Intaked " + data.PickUpGround + " Notes from Ground";
-					document.getElementById("sourcePickup").textContent = "Intaked " + data.PickUpSource + " Notes from Source";
-					document.getElementById("unampedSpeaker").textContent = "Shot " + data.SpeakerNotesUnamped + " Notes into an Unamped Speaker";
-					document.getElementById("ampedSpeaker").textContent = "Shot " + data.SpeakerNotesAmped + " Notes into an Amped Speaker";
-					document.getElementById("amps").textContent = "Put " + data.AmpNotes + " Notes into an Amp";
+					document.getElementById("coop").textContent = "Coopertition: " + data.Coopertition;
+					document.getElementById("feeder").textContent = "Feeder: " + data.Feeder;
+					document.getElementById("groundPickup").textContent = "Ground Intake: " + data.PickUpGround;
+					document.getElementById("sourcePickup").textContent = "Source Intake: " + data.PickUpSource;
+					document.getElementById("unampedSpeaker").textContent = "Unamped Speaker: " + data.SpeakerNotesUnamped;
+					document.getElementById("ampedSpeaker").textContent = "Amped Speaker: " + data.SpeakerNotesAmped;
+					document.getElementById("amps").textContent = "Amps: " + data.AmpNotes;
 					
-					document.getElementById("onstage").textContent = (data.Onstage ? "" : "Not ") + "Onstage";
-					document.getElementById("park").textContent = (data.Park ? "" : "Not ") + "Parked";
-					document.getElementById("spotlight").textContent = (data.Spotlight ? "" : "Not ") + "Spotlit";
-					document.getElementById("trap").textContent = "Did " + (data.Trap ? "" : "not ") + "Play Trap";
+					document.getElementById("onstage").textContent = "Onstage: " + data.Onstage;
+					document.getElementById("park").textContent = "Parked: " + data.Park;
+					document.getElementById("spotlight").textContent = "Spotlit: " + data.Spotlight; 
+					document.getElementById("trap").textContent = "Trap: " + data.Trap;
 					
 					document.getElementById("comments").textContent = data.Comments;
 				}
 			}
 			
+			async function clickOnAllChart(event) {
+				var points = allChart.getElementsAtEventForMode(event, 'nearest', {
+					intersect: true
+				}, true);
+				if(points.length) {
+					firstPoint = points[0];
+					label = allChart.data.labels[firstPoint._index];
+					value = allChart.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+					operation = allChart.data.datasets[firstPoint._datasetIndex].label.split(' ')[1];
+					jumpToIndividual(value.x, operation);
+					document.getElementById("clickIndividual").click();
+				}
+			}
+			
 			updateIndividual(948, "TeleSpeaker");
 			initAll("TeleSpeaker", false);
+			initTeamDropdown();
+			
 		</script>
 	</head>
 	
 	<body>
 		<!-- navigator -->
 		<div class="tab">
-			<button class="tabLinks" onclick="openTab(event, 'allTeams')">All Teams</button>
-			<button class="tabLinks" onclick="openTab(event, 'individual')">Individual</button>
+			<button id="clickAll" class="tabLinks" onclick="openTab(event, 'allTeams')">All Teams</button>
+			<button id="clickIndividual" class="tabLinks" onclick="openTab(event, 'individual')">Individual</button>
 		
 			<!-- all robots screen -->
 			<div id="allTeams" class="tabcontent">
@@ -292,10 +322,10 @@
 			<!-- individual robot screen -->
 			<div id="individual" class="tabcontent">
 				<h1>Individual Team</h1><br>
-				<div class="column">
+				<div>
 					<h2>Chart Data</h2><br>
 					<label for="team">Team #</label>
-					<input type="text" name="team" id="team" value="948">
+					<input type="text" name="team" list="selectDataTeam" id="team" value="948">
 					<input type="text" list="selectData" id="individualSelector" />
 						<datalist id="selectData">
 							<option>V AUTOS V</option>
@@ -327,44 +357,44 @@
 					<!-- misc data -->
 					<div class="column">
 						<h3 id="qualNum">Qualification #</h3>
-						<h4 id="alliance">(Alliance) (1/2/3)</h4>
-						<h4 id="replay">(Normal/Replayed) Match</h4>
-						<h4 id="scouter">Scouted By: </h4>
+						<h4 id="alliance">Alliance #</h4>
+						<h4 id="replay">Replay</h4>
+						<h4 id="scouter">Scouter: </h4>
 						<h4 id="quality">Data Quality: </h4>
 					</div>
 					
 					<!-- auto -->
 					<div class="column">
 						<h3>Auto</h3>
-						<h4 id="coords">Coords</h4>
-						<h4 id="preload">(Not) Preloaded: </h4>
-						<h4 id="eStop">Did (Not) Emergency Stop</h4>
-						<h4 id="leftWing">Did (Not) Leave Wing</h4>
-						<h4 id="notesCenter">Notes from Center: </h4>
-						<h4 id="notesWing">Notes from Wing: </h4>
-						<h4 id="autoSpeaker">Speaker shots: </h4>
-						<h4 id="autoAmp">Amp shots: </h4>
+						<h4 id="coords">(x,y)</h4>
+						<h4 id="preload">Preloaded: </h4>
+						<h4 id="eStop">Auto Stop: </h4>
+						<h4 id="leftWing">Left Wing:</h4>
+						<h4 id="notesCenter">Center Notes: </h4>
+						<h4 id="notesWing">Wings Note: </h4>
+						<h4 id="autoSpeaker">Speaker: </h4>
+						<h4 id="autoAmp">Amp: </h4>
 					</div>
 					
 					<!-- tele-op -->
 					<div class="column">
 						<h3>Tele-Op</h3>
-						<h4 id="coop">Did (Not) Trigger Coopertition</h4>
-						<h4 id="feeder">Is (Not) a Feeder</h4>
-						<h4 id="groundPickup"># notes picked up from ground</h4>
-						<h4 id="sourcePickup"># notes picked up from source</h4>
-						<h4 id="unampedSpeaker"># speaker shots unamped</h4>
-						<h4 id="ampedSpeaker"># speaker shots amped</h4>
-						<h4 id="amps"># amp shots</h4>
+						<h4 id="coop">Coopertition: </h4>
+						<h4 id="feeder">Feeder: </h4>
+						<h4 id="groundPickup">Ground Intake: </h4>
+						<h4 id="sourcePickup">Source Intake: </h4>
+						<h4 id="unampedSpeaker">Unamped Speaker: </h4>
+						<h4 id="ampedSpeaker">Amped Speaker: </h4>
+						<h4 id="amps">Amps: </h4>
 					</div>
 					
 					<!-- endgame -->
 					<div class="column">
 						<h3>Endgame</h3>
-						<h4 id="onstage">(Not) Onstage</h4>
-						<h4 id="park">(Not) Parked</h4>
-						<h4 id="spotlight">(Not) Spotlit</h4>
-						<h4 id="trap">(Didn't) Play Trap</h4>
+						<h4 id="onstage">Onstage:</h4>
+						<h4 id="park">Parked: </h4>
+						<h4 id="spotlight">Spotlit: </h4>
+						<h4 id="trap">Trap: </h4>
 					</div>
 					
 					<!-- comments -->
