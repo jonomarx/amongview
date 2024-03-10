@@ -338,6 +338,26 @@ async function clickOnIndividualChart(event) {
 		document.getElementById("sHPComments").textContent = data2.HumanPlayerComments;
 
 		document.getElementById("sComments").textContent = data2.Comments;
+		
+		canvas = document.getElementById("startImg");
+		ctx = canvas.getContext("2d");
+		
+		if(data.AllianceColor == "Red") {
+			image = document.getElementById("RedStart");
+			ctx.fillStyle = "red";
+		} else {
+			image = document.getElementById("BlueStart");
+			ctx.fillStyle = "blue";
+		}
+		
+		ctx.fillRect(0,0,120,600);
+		ctx.drawImage(image, 0, 0, 120, 600);
+		
+		coords = data.StartPos.split(", ")
+		ctx.fillStyle="black";
+		ctx.beginPath();
+		ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
+		ctx.fill();
 	}
 }
 
