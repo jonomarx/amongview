@@ -17,3 +17,9 @@
 	display: block;
 	clear: left;
 }
+
+.commentsPaste {
+	overflow-y:auto;
+	max-height:300px;
+	max-width: 400px;
+}
