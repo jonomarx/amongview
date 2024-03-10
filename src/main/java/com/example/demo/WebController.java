@@ -25,4 +25,9 @@ public class WebController {
 	public String css() {
 		return "index.css";
 	}
+	
+	@GetMapping("/index.js")
+	public String js() {
+		return "index.js";
+	}
 }

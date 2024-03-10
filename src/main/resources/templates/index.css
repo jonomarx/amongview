@@ -12,3 +12,8 @@
 	float: left;
 	padding: 5px 5px;
 }
+
+.bloc {
+	display: block;
+	clear: left;
+}

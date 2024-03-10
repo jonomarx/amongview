@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class WebRestController {
 	@Autowired
 	ObjectiveDatabase objective;
+	@Autowired
+	SubjectiveDatabase subjective;
 	
 	@GetMapping("/csv")
 	public String csv() {
@@ -33,18 +35,32 @@ public class WebRestController {
 		return mapper.writeValueAsString(data);
 	}
 	
-	@GetMapping(value="/sql",produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> sql(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
+	@GetMapping(value="/obj", produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> obj(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		String result = mapper.writeValueAsString(objective.findAllByTeamNumberOrderByMatchNumberAsc(teamNum));
+		String result = mapper.writeValueAsString(objective.findAllByTeamNumberOrderByMatchTypeDescMatchNumberAsc(teamNum));
 		return ResponseEntity.of(Optional.of(result));
 	}
 	
-	@GetMapping(value="/qual",produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> qual(@RequestParam("teamNum") int teamNum, @RequestParam("qual") int qual) throws JsonProcessingException {
+	@GetMapping(value="/sub", produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> sub(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		String result = mapper.writeValueAsString(objective.findByTeamNumberAndMatchNumber(teamNum, qual));
+		String result = mapper.writeValueAsString(subjective.findAllByTeamNumberOrderByMatchTypeDescMatchNumberAsc(teamNum));
 		return ResponseEntity.of(Optional.of(result));
+	}
+	
+	@GetMapping(value="/match",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> qual(@RequestParam("teamNum") int teamNum, @RequestParam("match") int match, @RequestParam("type") String type, @RequestParam("data") String dataType) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		if(dataType.equals("Objective")) {
+			String result = mapper.writeValueAsString(objective.findByTeamNumberAndMatchNumberAndMatchType(teamNum, match, type));
+			return ResponseEntity.of(Optional.of(result));
+		} else if(dataType.equals("Subjective")) {
+			String result = mapper.writeValueAsString(subjective.findByTeamNumberAndMatchNumberAndMatchType(teamNum, match, type));
+			return ResponseEntity.of(Optional.of(result));
+		} else {
+			return ResponseEntity.of(Optional.of(null));
+		}
 	}
 	
 	@GetMapping(value="/teams", produces = MediaType.APPLICATION_JSON_VALUE)
