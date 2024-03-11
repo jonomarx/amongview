@@ -177,7 +177,33 @@ async function updateIndividual(teamNum, operation) {
 	subTotal = 0;
 	podiumTotal = 0;
 	otherTotal = 0;
-	document.getElementById("commentsPaste").replaceChildren();
+	
+	document.getElementById("commentsPaste1").replaceChildren();
+	text.forEach(item => {
+		theDiv = document.createElement("div");
+		theMatch = document.createElement("div");
+		theComments = document.createElement("div");
+		
+		theDiv.classList.add("bloc");
+		theMatch.classList.add("column");
+		theComments.classList.add("column");
+		
+		matchData = document.createElement("h3");
+		matchData.textContent = item.MatchType.charAt(0) + item.MatchNumber;
+		theMatch.appendChild(matchData);
+		
+		commentData = document.createElement("p");
+		commentData.textContent = item.Comments;
+		theComments.appendChild(commentData);
+		
+		theDiv.appendChild(theMatch);
+		theDiv.appendChild(theComments);
+		
+		document.getElementById("commentsPaste1").appendChild(theDiv);
+	});
+	
+	
+	document.getElementById("commentsPaste2").replaceChildren();
 	text2.forEach(item => {
 		if(item.CanScoreSub) subTotal++;
 		if(item.CanScorePodium) podiumTotal++;
@@ -202,7 +228,7 @@ async function updateIndividual(teamNum, operation) {
 		theDiv.appendChild(theMatch);
 		theDiv.appendChild(theComments);
 		
-		document.getElementById("commentsPaste").appendChild(theDiv);
+		document.getElementById("commentsPaste2").appendChild(theDiv);
 	});
 
 	document.getElementById("avgSubwoofer").textContent = "Subwoofer %: " + subTotal / text2.length * 100;
