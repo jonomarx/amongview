@@ -1,7 +1,13 @@
+body, html {
+	background-image: url("bg.jpg");
+}
+h1,h2,h3,h4,p,label {
+	color:white;
+}
+
 .tab {
 	overflow: hidden;
 	border: 1px solid #ddd;
-	background-color: #fff;
 }
 
 .tabcontent {

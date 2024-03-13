@@ -36,6 +36,16 @@ dataFuncs["TeleSource"] = function(item) {return item.PickUpSource};
 dataFuncs["TelePickups"] = function(item) {return item.PickUpGround + item.PickUpSource};
 dataFuncs["TeleOuttakeEfficiency"] = function(item) {return (item.SpeakerNotesAmped + item.SpeakerNotesUnamped + item.AmpNotes) / (item.PickUpGround + item.PickUpSource)};
 
+dataFuncs["EndOnstage"] = function(item) {return (item.Onstage ? 1 : 0)};
+dataFuncs["EndPark"] = function(item) {return (item.Park ? 1 : 0)};
+dataFuncs["EndTrap"] = function(item) {return (item.Trap ? 1 : 0)};
+dataFuncs["EndSpotlight"] = function(item) {return (item.Spotlight ? 1 : 0)};
+dataFuncs["EndStatus"] = function(item) {
+	if(item.Onstage) return 2;
+	if(item.Park) return 1;
+	return 0;
+};
+dataFuncs["EndSpotlight"]
 let autoNoteBlue = {};
 autoNoteBlue["0"] = {x:20,y:28};
 autoNoteBlue["1"] = {x:20,y:97};
