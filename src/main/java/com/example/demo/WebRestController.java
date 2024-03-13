@@ -22,6 +22,8 @@ public class WebRestController {
 	ObjectiveDatabase objective;
 	@Autowired
 	SubjectiveDatabase subjective;
+	@Autowired
+	PitDatabase pit;
 	
 	@GetMapping("/csv")
 	public String csv() {
@@ -49,7 +51,7 @@ public class WebRestController {
 		return ResponseEntity.of(Optional.of(result));
 	}
 	
-	@GetMapping(value="/match",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/match",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> qual(@RequestParam("teamNum") int teamNum, @RequestParam("match") int match, @RequestParam("type") String type, @RequestParam("data") String dataType) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		if(dataType.equals("Objective")) {
@@ -61,6 +63,12 @@ public class WebRestController {
 		} else {
 			return ResponseEntity.of(Optional.of(null));
 		}
+	}
+	
+	@GetMapping(value="/pit", produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> pit(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.of(Optional.of(mapper.writeValueAsString(pit.findByTeamNumber(teamNum))));
 	}
 	
 	@GetMapping(value="/teams", produces = MediaType.APPLICATION_JSON_VALUE)

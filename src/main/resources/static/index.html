@@ -4,14 +4,14 @@
 		<link rel="stylesheet" type="text/css" href="index.css">
 		<script src="/Chart.js"></script>
 		<script src="/index.js"></script>
-		
+	</head>
+	
+	<body>
 		<div style="display:none;">
 			<img id="BlueStart" src="blueStart.webp" width="120" height="600" />
 			<img id="RedStart" src="redStart.webp" width="120" height="600" />
 		</div>
-	</head>
-	
-	<body>
+		
 		<!-- navigator -->
 		<div class="tab">
 			<button id="clickAll" class="tabLinks" onclick="openTab(event, 'allTeams')">All Teams</button>
@@ -99,6 +99,54 @@
 						<div id="commentsPaste2" class="commentsPaste"></div>
 					</div>
 				</div>
+				
+				<div class="bloc">
+					<h2>Pit Datas</h2>
+				</div>
+				
+				<div class="bloc">
+					<div class="column">
+						<h3>Robot Misc</h3>
+						<h4 id="pitTeam">Team </h4>
+						<h4 id="pitNumber">Number </h4>
+						<h4 id="pitInterviewer">Interviewer </h4>
+						<h4 id="pitInterviewee">Interviewee </h4>
+						<h4 id="pitRHeight">Robot Height </h4>
+						<h4 id="pitRLW">Robot Len/Wid </h4>
+						<h4 id="pitRW">Robot Weight </h4>
+					</div>
+					<div class="column">
+						<h3>Robot Info.</h3>
+						<h4 id="pitVision">Vision </h4>
+						<h4 id="pitVComments">comments...</h4>
+						<h4 id="pitTrain">drive train </h4>
+						<h4 id="pitMech">mechanisms </h4>
+					</div>
+					<div class="column">
+						<h3>Auto</h3>
+						<h4 id="pitPieces">auto pieces</h4>
+						<h4 id="pitAAmp">auto amp</h4>
+						<h4 id="pitASpeaker">auto speaker</h4>
+						<h4 id="pitWing">leaves wing</h4>
+					</div>
+					<div class="column">
+						<h3>Tele-Op</h3>
+						<h4 id="pitPreference">scoring preference</h4>
+						<h4 id="pitTAmp">score amp</h4>
+						<h4 id="pitTAmpCT">amp cycle time</h4>
+						<h4 id="pitTSpeaker">score speaker</h4>
+						<h4 id="pitTSpeakerCT">speaker cycle time</h4>
+						<h4 id="pitGround">ground pickup</h4>
+						<h4 id="pitSource">source pickup</h4>
+					</div>
+					<div class="column">
+						<h3>Additional</h3>
+						<h4 id="pitDriveXP">driver XP</h4>
+						<h4 id="pitTComments">team comments</h4>
+						<h4 id="pitPComments">personal comments</h4>
+					</div>
+				</div>
+				
 				<div class="bloc">
 					<!-- misc data -->
 					<div class="column">
@@ -156,7 +204,6 @@
 						<p id="comments"></p>
 					</div>
 				</div>
-				<br>
 				<div class="bloc">
 					<!-- misc data -->
 					<div class="column">
@@ -177,6 +224,7 @@
 					<!-- tele op -->
 					<div class="column">
 						<h3>Tele-Op</h3>
+						<h4 id="sCoop">Coopertition: </h4>
 						<h4 id="sSub">Subwoofer Shot: </h4>
 						<h4 id="sPodium">Podium Shot: </h4>
 						<h4 id="sOther">Other Shot: </h4>

@@ -39,7 +39,7 @@ public class SubjectiveData {
 	private boolean hpAtAmp;
 	
 	@JsonProperty("AutoPickups")
-	private String[] autoPickups;
+	private String autoPickups;
 	
 	@JsonProperty("CanScoreSub")
 	private boolean canScoreSub;
@@ -52,6 +52,9 @@ public class SubjectiveData {
 	
 	@JsonProperty("Feeder")
 	private boolean feeder;
+	
+	@JsonProperty("Coopertition")
+	private boolean coopertition;
 	
 	@JsonProperty("HumanPlayerComments")
 	@Column(columnDefinition="varchar(512)")
@@ -141,11 +144,11 @@ public class SubjectiveData {
 		this.hpAtAmp = hpAtAmp;
 	}
 
-	public String[] getAutoPickups() {
+	public String getAutoPickups() {
 		return autoPickups;
 	}
 
-	public void setAutoPickups(String[] autoPickups) {
+	public void setAutoPickups(String autoPickups) {
 		this.autoPickups = autoPickups;
 	}
 
@@ -181,6 +184,14 @@ public class SubjectiveData {
 		this.feeder = feeder;
 	}
 
+	public boolean isCoopertition() {
+		return coopertition;
+	}
+
+	public void setCoopertition(boolean coopertition) {
+		this.coopertition = coopertition;
+	}
+
 	public String getHumanPlayerComments() {
 		return humanPlayerComments;
 	}
@@ -196,4 +207,5 @@ public class SubjectiveData {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
+	
 }

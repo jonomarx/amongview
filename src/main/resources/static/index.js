@@ -235,7 +235,46 @@ async function updateIndividual(teamNum, operation) {
 	document.getElementById("avgPodium").textContent = "Podium %: " + podiumTotal / text2.length * 100;
 	document.getElementById("avgOther").textContent = "Other %: " + otherTotal / text2.length * 100;
 	
+	const params3 = new URLSearchParams();
+	params3.append("teamNum", teamNum);
+	const response3 = await fetch("/pit?" + params3.toString(), {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		credentials: 'include',
+	});
+	pit = await response3.json();
 	
+	document.getElementById("pitTeam").textContent = "Team: " + pit.TeamName;
+	document.getElementById("pitNumber").textContent = pit.TeamNumber;
+	document.getElementById("pitInterviewer").textContent = "Interviewer: " + pit.Interviewer;
+	document.getElementById("pitInterviewee").textContent = "Interviewee: " + pit.Interviewee;
+	document.getElementById("pitRHeight").textContent = "Robot Height: " + pit.RobotHeight;
+	document.getElementById("pitRLW").textContent = "Robot Dims: " + pit.RobotLengthWidth;
+	document.getElementById("pitRW").textContent = "Robot Weight: " + pit.RobotWeight;
+	
+	document.getElementById("pitVision").textContent = "Can Vision: " + pit.Vision;
+	document.getElementById("pitVComments").textContent = "Vision comments: " + pit.VisionCapability;
+	document.getElementById("pitTrain").textContent = "Drive Train: " + pit.DriveTrain;
+	document.getElementById("pitMech").textContent = "Mechanisms: " + pit.RobotMechanism;
+	
+	document.getElementById("pitPieces").textContent = "Notes: " + pit.AutoPieces;
+	document.getElementById("pitAAmp").textContent = "Scores Amp: " + pit.ScoresAmp;
+	document.getElementById("pitASpeaker").textContent = "Scores Speaker: " + pit.ScoresSpeaker;
+	document.getElementById("pitWing").textContent = "Leaves Wing: " + pit.LeaveWing;
+	
+	document.getElementById("pitPreference").textContent = "Prefers: " + pit.ScoringPreference;
+	document.getElementById("pitTAmp").textContent = "Can Amp: " + pit.CanScoreAmp;
+	document.getElementById("pitTAmpCT").textContent = "Amp Cycle Time: " + pit.CycleTimeAmp;
+	document.getElementById("pitTSpeaker").textContent = "Can Speaker: " + pit.CanScoreSpeaker;
+	document.getElementById("pitTSpeakerCT").textContent = "Speaker Cycle Time: " + pit.CycleTimeSpeaker;
+	document.getElementById("pitGround").textContent = "Ground Pickup: " + pit.PickupFromGround;
+	document.getElementById("pitSource").textContent = "Source Pickup: " + pit.PickupFromSource;
+	
+	document.getElementById("pitDriveXP").textContent = "Drive EXP: " + pit.DriverExperience;
+	document.getElementById("pitTComments").textContent = "Team Comments: " + pit.TeamComments;
+	document.getElementById("pitPComments").textContent = "Personal Comments: " + pit.PersonalComments;
 }
 
 async function initTeamDropdown() {
@@ -364,6 +403,8 @@ async function clickOnIndividualChart(event) {
 		document.getElementById("sHPComments").textContent = data2.HumanPlayerComments;
 
 		document.getElementById("sComments").textContent = data2.Comments;
+		
+		document.getElementById("sCoop").textContent = "Coopertition: " + data2.Coopertition;
 		
 		canvas = document.getElementById("startImg");
 		ctx = canvas.getContext("2d");
