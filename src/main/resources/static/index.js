@@ -36,6 +36,26 @@ dataFuncs["TeleSource"] = function(item) {return item.PickUpSource};
 dataFuncs["TelePickups"] = function(item) {return item.PickUpGround + item.PickUpSource};
 dataFuncs["TeleOuttakeEfficiency"] = function(item) {return (item.SpeakerNotesAmped + item.SpeakerNotesUnamped + item.AmpNotes) / (item.PickUpGround + item.PickUpSource)};
 
+let autoNoteBlue = {};
+autoNoteBlue["0"] = {x:20,y:28};
+autoNoteBlue["1"] = {x:20,y:97};
+autoNoteBlue["2"] = {x:20,y:165};
+autoNoteBlue["3"] = {x:20,y:235};
+autoNoteBlue["4"] = {x:20,y:304};
+autoNoteBlue["5"] = {x:239,y:47};
+autoNoteBlue["6"] = {x:239,y:106};
+autoNoteBlue["7"] = {x:239,y:165};
+
+let autoNoteRed = {};
+autoNoteRed["0"] = {x:336,y:28};
+autoNoteRed["1"] = {x:336,y:97};
+autoNoteRed["2"] = {x:336,y:165};
+autoNoteRed["3"] = {x:336,y:235};
+autoNoteRed["4"] = {x:336,y:304};
+autoNoteRed["5"] = {x:116,y:47};
+autoNoteRed["6"] = {x:116,y:106};
+autoNoteRed["7"] = {x:116,y:165};
+
 async function initAll(operation, sort) {
 	if(dataFuncs[operation] == null) return;
 	const response = await fetch("/teams", {
@@ -393,7 +413,7 @@ async function clickOnIndividualChart(event) {
 		document.getElementById("sScouter").textContent = "Scouter: " + data2.ScouterName;
 		document.getElementById("sQuality").textContent = "Data Quality: " + data2.DataQuality;
 
-		document.getElementById("sAutoPickups").textContent = "Auto Pickups: " + data2.AutoPickups;
+		//document.getElementById("sAutoPickups").textContent = "Auto Pickups: " + data2.AutoPickups;
 
 		document.getElementById("sSub").textContent = "Can Subwoofer: " + data2.CanScoreSub;
 		document.getElementById("sPodium").textContent = "Can Podium: " + data2.CanScorePodium;
@@ -426,6 +446,59 @@ async function clickOnIndividualChart(event) {
 		ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
 		ctx.fill();
 	}
+	
+	canvas2 = document.getElementById("sAutoPickups");
+	ctx2 = canvas2.getContext("2d");
+	
+	// THE PERSPECTIVE IS FLIPPED, DONT PANIC.
+	if(data.AllianceColor == "Blue") {
+		image = document.getElementById("RedNotes");
+		//color = "red";
+		color = "blue";
+		coordTable = autoNoteRed;
+	} else {
+		image = document.getElementById("BlueNotes");
+		//color = "blue";
+		color = "red"
+		coordTable = autoNoteBlue;
+	}
+	
+	ctx2.fillStyle = color;
+	ctx2.fillRect(0,0,356,333);
+	ctx2.drawImage(image, 0, 0, 356, 333);
+	
+	dataPoints = data2.AutoPickups.split(", ");
+	dataPoints.forEach(item => {
+		ctx2.fillStyle="black";
+		ctx2.beginPath();
+		coords = coordTable[item];
+		ctx2.arc(coords["x"], coords["y"], 12, 0, 2*Math.PI);
+		ctx2.fill();
+	});
+	
+	started = false;
+	ctx2.lineWidth = 4;
+	ctx2.beginPath();
+	dataPoints.forEach(item => {
+		coords = coordTable[item];
+		if(!started) {
+			ctx2.moveTo(coords["x"], coords["y"]);
+			started = true;
+		} else {
+			ctx2.lineTo(coords["x"], coords["y"]);
+		}
+	})
+	ctx2.stroke();
+	
+	ctx2.fillStyle = color;
+	ctx2.font = "bold 20px Sans Serif";
+	i = 0;
+	iTable = ["A","B","C","D","E","F","G","H"];
+	dataPoints.forEach(item => {
+		coords = coordTable[item];
+		ctx2.fillText(iTable[i], coords["x"]-5, coords["y"]+5);
+		i++;
+	});
 }
 
 async function clickOnAllChart(event) {
