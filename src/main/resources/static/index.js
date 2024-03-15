@@ -274,37 +274,44 @@ async function updateIndividual(teamNum, operation) {
 		},
 		credentials: 'include',
 	});
+	
 	pit = await response3.json();
 	
-	document.getElementById("pitTeam").textContent = "Team: " + pit.TeamName;
-	document.getElementById("pitNumber").textContent = pit.TeamNumber;
-	document.getElementById("pitInterviewer").textContent = "Interviewer: " + pit.Interviewer;
-	document.getElementById("pitInterviewee").textContent = "Interviewee: " + pit.Interviewee;
-	document.getElementById("pitRHeight").textContent = "Robot Height: " + pit.RobotHeight;
-	document.getElementById("pitRLW").textContent = "Robot Dims: " + pit.RobotLengthWidth;
-	document.getElementById("pitRW").textContent = "Robot Weight: " + pit.RobotWeight;
-	
-	document.getElementById("pitVision").textContent = "Can Vision: " + pit.Vision;
-	document.getElementById("pitVComments").textContent = "Vision comments: " + pit.VisionCapability;
-	document.getElementById("pitTrain").textContent = "Drive Train: " + pit.DriveTrain;
-	document.getElementById("pitMech").textContent = "Mechanisms: " + pit.RobotMechanism;
-	
-	document.getElementById("pitPieces").textContent = "Notes: " + pit.AutoPieces;
-	document.getElementById("pitAAmp").textContent = "Scores Amp: " + pit.ScoresAmp;
-	document.getElementById("pitASpeaker").textContent = "Scores Speaker: " + pit.ScoresSpeaker;
-	document.getElementById("pitWing").textContent = "Leaves Wing: " + pit.LeaveWing;
-	
-	document.getElementById("pitPreference").textContent = "Prefers: " + pit.ScoringPreference;
-	document.getElementById("pitTAmp").textContent = "Can Amp: " + pit.CanScoreAmp;
-	document.getElementById("pitTAmpCT").textContent = "Amp Cycle Time: " + pit.CycleTimeAmp;
-	document.getElementById("pitTSpeaker").textContent = "Can Speaker: " + pit.CanScoreSpeaker;
-	document.getElementById("pitTSpeakerCT").textContent = "Speaker Cycle Time: " + pit.CycleTimeSpeaker;
-	document.getElementById("pitGround").textContent = "Ground Pickup: " + pit.PickupFromGround;
-	document.getElementById("pitSource").textContent = "Source Pickup: " + pit.PickupFromSource;
-	
-	document.getElementById("pitDriveXP").textContent = "Drive EXP: " + pit.DriverExperience;
-	document.getElementById("pitTComments").textContent = "Team Comments: " + pit.TeamComments;
-	document.getElementById("pitPComments").textContent = "Personal Comments: " + pit.PersonalComments;
+	if(pit != null) {
+		document.getElementById("pitDiv").style.display = "";
+		
+		document.getElementById("pitTeam").textContent = "Team: " + pit.TeamName;
+		document.getElementById("pitNumber").textContent = pit.TeamNumber;
+		document.getElementById("pitInterviewer").textContent = "Interviewer: " + pit.Interviewer;
+		document.getElementById("pitInterviewee").textContent = "Interviewee: " + pit.Interviewee;
+		document.getElementById("pitRHeight").textContent = "Robot Height: " + pit.RobotHeight;
+		document.getElementById("pitRLW").textContent = "Robot Dims: " + pit.RobotLengthWidth;
+		document.getElementById("pitRW").textContent = "Robot Weight: " + pit.RobotWeight;
+		
+		document.getElementById("pitVision").textContent = "Can Vision: " + pit.Vision;
+		document.getElementById("pitVComments").textContent = "Vision comments: " + pit.VisionCapability;
+		document.getElementById("pitTrain").textContent = "Drive Train: " + pit.DriveTrain;
+		document.getElementById("pitMech").textContent = "Mechanisms: " + pit.RobotMechanism;
+		
+		document.getElementById("pitPieces").textContent = "Notes: " + pit.AutoPieces;
+		document.getElementById("pitAAmp").textContent = "Scores Amp: " + pit.ScoresAmp;
+		document.getElementById("pitASpeaker").textContent = "Scores Speaker: " + pit.ScoresSpeaker;
+		document.getElementById("pitWing").textContent = "Leaves Wing: " + pit.LeaveWing;
+		
+		document.getElementById("pitPreference").textContent = "Prefers: " + pit.ScoringPreference;
+		document.getElementById("pitTAmp").textContent = "Can Amp: " + pit.CanScoreAmp;
+		document.getElementById("pitTAmpCT").textContent = "Amp Cycle Time: " + pit.CycleTimeAmp;
+		document.getElementById("pitTSpeaker").textContent = "Can Speaker: " + pit.CanScoreSpeaker;
+		document.getElementById("pitTSpeakerCT").textContent = "Speaker Cycle Time: " + pit.CycleTimeSpeaker;
+		document.getElementById("pitGround").textContent = "Ground Pickup: " + pit.PickupFromGround;
+		document.getElementById("pitSource").textContent = "Source Pickup: " + pit.PickupFromSource;
+		
+		document.getElementById("pitDriveXP").textContent = "Drive EXP: " + pit.DriverExperience;
+		document.getElementById("pitTComments").textContent = "Team Comments: " + pit.TeamComments;
+		document.getElementById("pitPComments").textContent = "Personal Comments: " + pit.PersonalComments;
+	} else {
+		document.getElementById("pitDiv").style.display = "none";
+	}
 }
 
 async function initTeamDropdown() {
@@ -414,47 +421,54 @@ async function clickOnIndividualChart(event) {
 		document.getElementById("trap").textContent = "Trap: " + data.Trap;
 		
 		document.getElementById("comments").textContent = data.Comments;
-
-
-		document.getElementById("sQualNum").textContent = data2.TeamNumber + "'s " + (matchType.substring(0,matchType.length-1)) + " " + data2.MatchNumber;
-		document.getElementById("sAlliance").textContent = data2.AllianceColor + " " + data2.DriverStation;
-		document.getElementById("sHP").textContent = "HP at Amp: " + data2.HPAtAmp;
-		document.getElementById("sReplay").textContent = "Replay: " + data2.Replay;
-		document.getElementById("sScouter").textContent = "Scouter: " + data2.ScouterName;
-		document.getElementById("sQuality").textContent = "Data Quality: " + data2.DataQuality;
-
-		//document.getElementById("sAutoPickups").textContent = "Auto Pickups: " + data2.AutoPickups;
-
-		document.getElementById("sSub").textContent = "Can Subwoofer: " + data2.CanScoreSub;
-		document.getElementById("sPodium").textContent = "Can Podium: " + data2.CanScorePodium;
-		document.getElementById("sOther").textContent = "Can Other: " + data2.CanScoreOther;
-		document.getElementById("sFeeder").textContent = "Feeder: " + data2.Feeder;
-
-		document.getElementById("sHPComments").textContent = data2.HumanPlayerComments;
-
-		document.getElementById("sComments").textContent = data2.Comments;
 		
-		document.getElementById("sCoop").textContent = "Coopertition: " + data2.Coopertition;
+		document.getElementById("objectiveDiv").scrollIntoView({behavior: 'smooth'});
 		
-		canvas = document.getElementById("startImg");
-		ctx = canvas.getContext("2d");
-		
-		if(data.AllianceColor == "Red") {
-			image = document.getElementById("RedStart");
-			ctx.fillStyle = "red";
+		if(data2 != null) {
+			document.getElementById("subjectiveDiv").style.display = "";
+			
+			document.getElementById("sQualNum").textContent = data2.TeamNumber + "'s " + (matchType.substring(0,matchType.length-1)) + " " + data2.MatchNumber;
+			document.getElementById("sAlliance").textContent = data2.AllianceColor + " " + data2.DriverStation;
+			document.getElementById("sHP").textContent = "HP at Amp: " + data2.HPAtAmp;
+			document.getElementById("sReplay").textContent = "Replay: " + data2.Replay;
+			document.getElementById("sScouter").textContent = "Scouter: " + data2.ScouterName;
+			document.getElementById("sQuality").textContent = "Data Quality: " + data2.DataQuality;
+	
+			//document.getElementById("sAutoPickups").textContent = "Auto Pickups: " + data2.AutoPickups;
+	
+			document.getElementById("sSub").textContent = "Can Subwoofer: " + data2.CanScoreSub;
+			document.getElementById("sPodium").textContent = "Can Podium: " + data2.CanScorePodium;
+			document.getElementById("sOther").textContent = "Can Other: " + data2.CanScoreOther;
+			document.getElementById("sFeeder").textContent = "Feeder: " + data2.Feeder;
+	
+			document.getElementById("sHPComments").textContent = data2.HumanPlayerComments;
+	
+			document.getElementById("sComments").textContent = data2.Comments;
+			
+			document.getElementById("sCoop").textContent = "Coopertition: " + data2.Coopertition;
+			
+			canvas = document.getElementById("startImg");
+			ctx = canvas.getContext("2d");
+			
+			if(data.AllianceColor == "Red") {
+				image = document.getElementById("RedStart");
+				ctx.fillStyle = "red";
+			} else {
+				image = document.getElementById("BlueStart");
+				ctx.fillStyle = "blue";
+			}
+			
+			ctx.fillRect(0,0,120,600);
+			ctx.drawImage(image, 0, 0, 120, 600);
+			
+			coords = data.StartPos.split(", ")
+			ctx.fillStyle="black";
+			ctx.beginPath();
+			ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
+			ctx.fill();
 		} else {
-			image = document.getElementById("BlueStart");
-			ctx.fillStyle = "blue";
+			document.getElementById("subjectiveDiv").style.display = "none";
 		}
-		
-		ctx.fillRect(0,0,120,600);
-		ctx.drawImage(image, 0, 0, 120, 600);
-		
-		coords = data.StartPos.split(", ")
-		ctx.fillStyle="black";
-		ctx.beginPath();
-		ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
-		ctx.fill();
 	}
 	
 	canvas2 = document.getElementById("sAutoPickups");
