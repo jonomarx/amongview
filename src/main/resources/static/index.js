@@ -261,9 +261,9 @@ async function updateIndividual(teamNum, operation) {
 		document.getElementById("commentsPaste2").appendChild(theDiv);
 	});
 
-	document.getElementById("avgSubwoofer").textContent = "Subwoofer %: " + subTotal / text2.length * 100;
-	document.getElementById("avgPodium").textContent = "Podium %: " + podiumTotal / text2.length * 100;
-	document.getElementById("avgOther").textContent = "Other %: " + otherTotal / text2.length * 100;
+	document.getElementById("avgSubwoofer").textContent = "Subwoofer %: " + Math.round(subTotal / text2.length * 100);
+	document.getElementById("avgPodium").textContent = "Podium %: " + Math.round(podiumTotal / text2.length * 100);
+	document.getElementById("avgOther").textContent = "Other %: " + Math.round(otherTotal / text2.length * 100);
 	
 	const params3 = new URLSearchParams();
 	params3.append("teamNum", teamNum);
@@ -424,6 +424,26 @@ async function clickOnIndividualChart(event) {
 		
 		document.getElementById("objectiveDiv").scrollIntoView({behavior: 'smooth'});
 		
+		canvas = document.getElementById("startImg");
+		ctx = canvas.getContext("2d");
+		
+		if(data.AllianceColor == "Red") {
+			image = document.getElementById("RedStart");
+			ctx.fillStyle = "red";
+		} else {
+			image = document.getElementById("BlueStart");
+			ctx.fillStyle = "blue";
+		}
+		
+		ctx.fillRect(0,0,120,600);
+		ctx.drawImage(image, 0, 0, 120, 600);
+		
+		coords = data.StartPos.split(", ")
+		ctx.fillStyle="black";
+		ctx.beginPath();
+		ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
+		ctx.fill();
+		
 		if(data2 != null) {
 			document.getElementById("subjectiveDiv").style.display = "";
 			
@@ -447,82 +467,63 @@ async function clickOnIndividualChart(event) {
 			
 			document.getElementById("sCoop").textContent = "Coopertition: " + data2.Coopertition;
 			
-			canvas = document.getElementById("startImg");
-			ctx = canvas.getContext("2d");
+			canvas2 = document.getElementById("sAutoPickups");
 			
-			if(data.AllianceColor == "Red") {
-				image = document.getElementById("RedStart");
-				ctx.fillStyle = "red";
+			ctx2 = canvas2.getContext("2d");
+			
+			// THE PERSPECTIVE IS FLIPPED, DONT PANIC.
+			if(data.AllianceColor == "Blue") {
+				image = document.getElementById("RedNotes");
+				//color = "red";
+				color = "blue";
+				coordTable = autoNoteRed;
 			} else {
-				image = document.getElementById("BlueStart");
-				ctx.fillStyle = "blue";
+				image = document.getElementById("BlueNotes");
+				//color = "blue";
+				color = "red"
+				coordTable = autoNoteBlue;
 			}
 			
-			ctx.fillRect(0,0,120,600);
-			ctx.drawImage(image, 0, 0, 120, 600);
+			ctx2.fillStyle = color;
+			ctx2.fillRect(0,0,356,333);
+			ctx2.drawImage(image, 0, 0, 356, 333);
 			
-			coords = data.StartPos.split(", ")
-			ctx.fillStyle="black";
-			ctx.beginPath();
-			ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
-			ctx.fill();
+			dataPoints = data2.AutoPickups.split(", ");
+			dataPoints.forEach(item => {
+				ctx2.fillStyle="black";
+				ctx2.beginPath();
+				coords = coordTable[item];
+				ctx2.arc(coords["x"], coords["y"], 12, 0, 2*Math.PI);
+				ctx2.fill();
+			});
+			
+			started = false;
+			ctx2.lineWidth = 4;
+			ctx2.beginPath();
+			dataPoints.forEach(item => {
+				coords = coordTable[item];
+				if(!started) {
+					ctx2.moveTo(coords["x"], coords["y"]);
+					started = true;
+				} else {
+					ctx2.lineTo(coords["x"], coords["y"]);
+				}
+			})
+			ctx2.stroke();
+			
+			ctx2.fillStyle = color;
+			ctx2.font = "bold 20px Sans Serif";
+			i = 0;
+			iTable = ["A","B","C","D","E","F","G","H"];
+			dataPoints.forEach(item => {
+				coords = coordTable[item];
+				ctx2.fillText(iTable[i], coords["x"]-5, coords["y"]+5);
+				i++;
+			});
 		} else {
 			document.getElementById("subjectiveDiv").style.display = "none";
 		}
 	}
-	
-	canvas2 = document.getElementById("sAutoPickups");
-	ctx2 = canvas2.getContext("2d");
-	
-	// THE PERSPECTIVE IS FLIPPED, DONT PANIC.
-	if(data.AllianceColor == "Blue") {
-		image = document.getElementById("RedNotes");
-		//color = "red";
-		color = "blue";
-		coordTable = autoNoteRed;
-	} else {
-		image = document.getElementById("BlueNotes");
-		//color = "blue";
-		color = "red"
-		coordTable = autoNoteBlue;
-	}
-	
-	ctx2.fillStyle = color;
-	ctx2.fillRect(0,0,356,333);
-	ctx2.drawImage(image, 0, 0, 356, 333);
-	
-	dataPoints = data2.AutoPickups.split(", ");
-	dataPoints.forEach(item => {
-		ctx2.fillStyle="black";
-		ctx2.beginPath();
-		coords = coordTable[item];
-		ctx2.arc(coords["x"], coords["y"], 12, 0, 2*Math.PI);
-		ctx2.fill();
-	});
-	
-	started = false;
-	ctx2.lineWidth = 4;
-	ctx2.beginPath();
-	dataPoints.forEach(item => {
-		coords = coordTable[item];
-		if(!started) {
-			ctx2.moveTo(coords["x"], coords["y"]);
-			started = true;
-		} else {
-			ctx2.lineTo(coords["x"], coords["y"]);
-		}
-	})
-	ctx2.stroke();
-	
-	ctx2.fillStyle = color;
-	ctx2.font = "bold 20px Sans Serif";
-	i = 0;
-	iTable = ["A","B","C","D","E","F","G","H"];
-	dataPoints.forEach(item => {
-		coords = coordTable[item];
-		ctx2.fillText(iTable[i], coords["x"]-5, coords["y"]+5);
-		i++;
-	});
 }
 
 async function clickOnAllChart(event) {
