@@ -40,7 +40,7 @@ public class Startup {
 	private void run() throws StreamReadException, DatabindException, IOException {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("directory holding all objective data: ");
-		File file = new File(scanner.nextLine().replaceAll("[\"]", ""));
+		File file = new File(scanner.nextLine().replaceAll("[\"]", "").trim());
 		
 		objective.deleteAll();
 		subjective.deleteAll();
@@ -54,7 +54,7 @@ public class Startup {
 		}
 		
 		System.out.print("directory holding all subjective data: ");
-		File file2 = new File(scanner.nextLine().replaceAll("[\"]", ""));
+		File file2 = new File(scanner.nextLine().replaceAll("[\"]", "").trim());
 		for(File f : file2.listFiles()) {
 			if(f.getName().endsWith(".json")) {
 				SubjectiveData data = mapper.readValue(f, SubjectiveData.class);
@@ -64,7 +64,7 @@ public class Startup {
 		
 		System.out.print("directory holding all pit data: ");
 		pit.deleteAll();
-		File folder = new File(scanner.nextLine().replaceAll("[\"]", ""));
+		File folder = new File(scanner.nextLine().replaceAll("[\"]", "").trim());
 		for(File f : folder.listFiles()) {
 			if(f.getName().endsWith(".json")) {
 				PitData data = mapper.readValue(f, PitData.class);
