@@ -45,7 +45,25 @@ dataFuncs["EndStatus"] = function(item) {
 	if(item.Park) return 1;
 	return 0;
 };
-dataFuncs["EndSpotlight"]
+
+dataFuncs["AutoPoints"] = function(item) {
+	return (item.LeftWing ? 2 : 0) + item.AutoAmp * 2 + item.AutoSpeaker * 5;
+};
+dataFuncs["TelePoints"] = function(item) {
+	return item.SpeakerNotesUnamped * 2 + item.SpeakerNotesAmped * 5 + item.AmpNotes;
+}
+dataFuncs["TelePointsUnamped"] = function(item) {
+	return item.SpeakerNotesUnamped * 2 + item.SpeakerNotesAmped * 2 + item.AmpNotes;
+}
+dataFuncs["EndPoints"] = function(item) {
+	return item.Park + (item.Onstage ? 1 : 0) * (item.Spotlight ? 4 : 3) + item.Trap * 5;
+}
+
+dataFuncs["TotalPoints"] = function(item) {
+	return dataFuncs["AutoPoints"](item) + dataFuncs["TelePoints"](item) + dataFuncs["EndPoints"](item);
+}
+
+
 let autoNoteBlue = {};
 autoNoteBlue["0"] = {x:20,y:28};
 autoNoteBlue["1"] = {x:20,y:97};
@@ -346,6 +364,8 @@ function loadAll() {
 function jumpToIndividual(teamNum, operation) {
 	individualChart.destroy();
 	individualChart = null;
+	document.getElementById("team").value = teamNum;
+	document.getElementById("individualSelector").value = operation;
 	updateIndividual(teamNum, operation);
 }
 
@@ -421,6 +441,11 @@ async function clickOnIndividualChart(event) {
 		document.getElementById("trap").textContent = "Trap: " + data.Trap;
 		
 		document.getElementById("comments").textContent = data.Comments;
+		
+		document.getElementById("totalPoints").textContent = "Sum Score: " + dataFuncs["TotalPoints"](data);
+		document.getElementById("autoPoints").textContent = "Auto Score: " + dataFuncs["AutoPoints"](data);
+		document.getElementById("telePoints").textContent = "Tele-Op Score: " + dataFuncs["TelePoints"](data);
+		document.getElementById("endPoints").textContent = "End Score: " + dataFuncs["EndPoints"](data);
 		
 		document.getElementById("objectiveDiv").scrollIntoView({behavior: 'smooth'});
 		

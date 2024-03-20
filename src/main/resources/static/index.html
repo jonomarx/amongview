@@ -23,30 +23,35 @@
 				<h1>All Robots</h1><br>
 				<input type="text" list="selectDataAll" id="allSelector" />
 					<datalist id="selectDataAll">
-						<option>V AUTOS V</option>
-						<option>AutoSpeaker</option>
-						<option>AutoAmp</option>
-						<option>AutoScores</option>
-						<option>AutoWing</option>
-						<option>AutoCenter</option>
-						<option>AutoPickups</option>
-						<option>AutoOuttakeEfficiency</option>
-						<option>V TELE-OP V</option>
-						<option>TeleSpeakerAmped</option>
-						<option>TeleSpeakerUnamped</option>
-						<option>TeleSpeaker</option>
-						<option>TeleAmp</option>
-						<option>TeleScores</option>
-						<option>TeleGround</option>
-						<option>TeleSource</option>
-						<option>TelePickups</option>
-						<option>TeleOuttakeEfficiency</option>
-						<option>V ENDGAME V</option>
-						<option>EndOnstage</option>
-						<option>EndPark</option>
-						<option>EndTrap</option>
-						<option>EndSpotlight</option>
-						<option>EndStatus</option>
+						<option>TotalPoints</option>
+								<option>V AUTOS V</option>
+								<option>AutoSpeaker</option>
+								<option>AutoAmp</option>
+								<option>AutoScores</option>
+								<option>AutoWing</option>
+								<option>AutoCenter</option>
+								<option>AutoPickups</option>
+								<option>AutoPoints</option>
+								<option>AutoOuttakeEfficiency</option>
+								<option>V TELE-OP V</option>
+								<option>TeleSpeakerAmped</option>
+								<option>TeleSpeakerUnamped</option>
+								<option>TeleSpeaker</option>
+								<option>TeleAmp</option>
+								<option>TeleScores</option>
+								<option>TeleGround</option>
+								<option>TeleSource</option>
+								<option>TelePickups</option>
+								<option>TelePoints</option>
+								<option>TelePointsUnamped</option>
+								<option>TeleOuttakeEfficiency</option>
+								<option>V ENDGAME V</option>
+								<option>EndOnstage</option>
+								<option>EndPark</option>
+								<option>EndTrap</option>
+								<option>EndSpotlight</option>
+								<option>EndStatus</option>
+								<option>EndPoints</options>
 					</datalist>
 				<button onclick="loadAll()">Load!</button>
 				<label for="sortTeams">Sort Teams?</label>
@@ -59,12 +64,13 @@
 			<div id="individual" class="tabcontent">
 				<h1>Individual Team</h1><br>
 				<div class="bloc">
-					<div class="column">
+					<div class="chart">
 						<h2>Chart Data</h2><br>
 						<label for="team">Team #</label>
 						<input type="text" name="team" list="selectDataTeam" id="team" value="948">
 						<input type="text" list="selectData" id="individualSelector" />
 							<datalist id="selectData">
+								<option>TotalPoints</option>
 								<option>V AUTOS V</option>
 								<option>AutoSpeaker</option>
 								<option>AutoAmp</option>
@@ -72,6 +78,7 @@
 								<option>AutoWing</option>
 								<option>AutoCenter</option>
 								<option>AutoPickups</option>
+								<option>AutoPoints</option>
 								<option>AutoOuttakeEfficiency</option>
 								<option>V TELE-OP V</option>
 								<option>TeleSpeakerAmped</option>
@@ -82,6 +89,8 @@
 								<option>TeleGround</option>
 								<option>TeleSource</option>
 								<option>TelePickups</option>
+								<option>TelePoints</option>
+								<option>TelePointsUnamped</option>
 								<option>TeleOuttakeEfficiency</option>
 								<option>V ENDGAME V</option>
 								<option>EndOnstage</option>
@@ -89,23 +98,24 @@
 								<option>EndTrap</option>
 								<option>EndSpotlight</option>
 								<option>EndStatus</option>
+								<option>EndPoints</options>
 							</datalist>
 						<button onclick="loadIndividual()">Load!</button>
 						<br>
 						<button onclick = "individualChart.destroy();individualChart=null">Destroy Chart</button>
 						<canvas id="individualChart" style="width:100%;max-width:700px"></canvas>
 					</div>
-					<div class="column">
+					<div class="bigColumn">
 						<h2>Cumulative Data</h2>
 						<h3 id="avgSubwoofer">Subwoofer %: </h3><br>
 						<h3 id="avgPodium">Podium %: </h3><br>
 						<h3 id="avgOther">Other %: </h3><br>
 					</div>
-					<div class="column">
+					<div class="bigColumn">
 						<h2>Comments and Stuff - Objective</h2>
 						<div id="commentsPaste1" class="commentsPaste"></div>
 					</div>
-					<div class="column">
+					<div class="bigColumn">
 						<h2>Comments and Stuff - Subjective</h2>
 						<div id="commentsPaste2" class="commentsPaste"></div>
 					</div>
@@ -164,6 +174,7 @@
 						<h4 id="replay">Replay</h4>
 						<h4 id="scouter">Scouter: </h4>
 						<h4 id="quality">Data Quality: </h4>
+						<h4 id="totalPoints">Sum Score: </h4>
 					</div>
 					
 					<!-- auto -->
@@ -177,6 +188,7 @@
 						<h4 id="notesWing">Wings Note: </h4>
 						<h4 id="autoSpeaker">Speaker: </h4>
 						<h4 id="autoAmp">Amp: </h4>
+						<h4 id="autoPoints">Auto Score: </h4>
 					</div>
 					
 					<!-- auto map -->
@@ -196,6 +208,7 @@
 						<h4 id="unampedSpeaker">Unamped Speaker: </h4>
 						<h4 id="ampedSpeaker">Amped Speaker: </h4>
 						<h4 id="amps">Amps: </h4>
+						<h4 id="telePoints">Tele Score: </h4>
 					</div>
 					
 					<!-- endgame -->
@@ -205,6 +218,7 @@
 						<h4 id="park">Parked: </h4>
 						<h4 id="spotlight">Spotlit: </h4>
 						<h4 id="trap">Trap: </h4>
+						<h4 id="endPoints">Endgame Score: </h4>
 					</div>
 					
 					<!-- comments -->

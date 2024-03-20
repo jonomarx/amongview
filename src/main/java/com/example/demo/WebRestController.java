@@ -25,18 +25,6 @@ public class WebRestController {
 	@Autowired
 	PitDatabase pit;
 	
-	@GetMapping("/csv")
-	public String csv() {
-		return "";
-	}
-	
-	@GetMapping("/json")
-	public String json() throws JsonProcessingException {
-		List<ObjectiveData> data = objective.findAll();
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(data);
-	}
-	
 	@GetMapping(value="/obj", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> obj(@RequestParam("teamNum") int teamNum) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -76,10 +64,5 @@ public class WebRestController {
 		ObjectMapper mapper = new ObjectMapper();
 		String result = mapper.writeValueAsString(objective.findAllTeams());
 		return ResponseEntity.of(Optional.of(result));
-	}
-	
-	@PostMapping("/sqlRaw")
-	public String sqlRaw(@RequestParam String cmd) {
-		return "";
 	}
 }
