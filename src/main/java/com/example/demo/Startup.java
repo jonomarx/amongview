@@ -53,7 +53,7 @@ public class Startup {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Objective Directory (blank for last used): ");
 		unformattedFilePath = scanner.nextLine();
-		if (unformattedFilePath == "") {
+		if (unformattedFilePath.equals("")) {
 			file = new File(cfg.getObjPath());
 			System.out.println(cfg.getObjPath());
 		} else {
@@ -74,7 +74,7 @@ public class Startup {
 
 		System.out.print("Subjective Directory (blank for last used): ");
 		unformattedFilePath = scanner.nextLine();
-		if (unformattedFilePath == "") {
+		if (unformattedFilePath.equals("")) {
 			file2 = new File(cfg.getSubjPath());
 			System.out.println(cfg.getSubjPath());
 		} else {
@@ -91,7 +91,7 @@ public class Startup {
 		System.out.print("Pit Directory (blank for last used): ");
 		pit.deleteAll();
 		unformattedFilePath = scanner.nextLine();
-		if (unformattedFilePath == "") {
+		if (unformattedFilePath.equals("")) {
 			folder = new File(cfg.getPitPath());
 			System.out.println(cfg.getPitPath());
 		} else {
