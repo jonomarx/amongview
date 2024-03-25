@@ -48,7 +48,7 @@ public class PitData {
 	private String robotMechanism;
 	
 	@JsonProperty("AutoPieces")
-	private int autoPieces;
+	private String autoPieces;
 	
 	@JsonProperty("ScoresAmp")
 	private boolean scoresAmp;
@@ -69,10 +69,10 @@ public class PitData {
 	private boolean canScoreSpeaker;
 	
 	@JsonProperty("CycleTimeSpeaker")
-	private int cycleTimeSpeaker;
+	private String cycleTimeSpeaker;
 	
 	@JsonProperty("CycleTimeAmp")
-	private int cycleTimeAmp;
+	private String cycleTimeAmp;
 	
 	@JsonProperty("PickupFromGround")
 	private boolean pickupFromGround;
@@ -263,14 +263,14 @@ public class PitData {
 	/**
 	 * @return the autoPieces
 	 */
-	public int getAutoPieces() {
+	public String getAutoPieces() {
 		return autoPieces;
 	}
 
 	/**
 	 * @param autoPieces the autoPieces to set
 	 */
-	public void setAutoPieces(int autoPieces) {
+	public void setAutoPieces(String autoPieces) {
 		this.autoPieces = autoPieces;
 	}
 
@@ -361,28 +361,28 @@ public class PitData {
 	/**
 	 * @return the cycleTimeSpeaker
 	 */
-	public int getCycleTimeSpeaker() {
+	public String getCycleTimeSpeaker() {
 		return cycleTimeSpeaker;
 	}
 
 	/**
 	 * @param cycleTimeSpeaker the cycleTimeSpeaker to set
 	 */
-	public void setCycleTimeSpeaker(int cycleTimeSpeaker) {
+	public void setCycleTimeSpeaker(String cycleTimeSpeaker) {
 		this.cycleTimeSpeaker = cycleTimeSpeaker;
 	}
 
 	/**
 	 * @return the cycleTimeAmp
 	 */
-	public int getCycleTimeAmp() {
+	public String getCycleTimeAmp() {
 		return cycleTimeAmp;
 	}
 
 	/**
 	 * @param cycleTimeAmp the cycleTimeAmp to set
 	 */
-	public void setCycleTimeAmp(int cycleTimeAmp) {
+	public void setCycleTimeAmp(String cycleTimeAmp) {
 		this.cycleTimeAmp = cycleTimeAmp;
 	}
 

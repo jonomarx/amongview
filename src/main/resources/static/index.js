@@ -121,8 +121,14 @@ async function initAll(operation, sort) {
 		teamData = await reply.json();
 		
 		total = 0;
-		teamData.forEach(item => total += dataFuncs[operation](item));
-		average = total / teamData.length;
+		zeroes = 0;
+		teamData.forEach(item => {
+			num = dataFuncs[operation](item);
+			total += num;
+			if(num == 0 && document.getElementById("no0s").checked) zeroes++;
+		});
+		
+		average = total / (teamData.length - zeroes);
 		data[i] = {x:team,y:average};
 	}
 	
@@ -136,6 +142,8 @@ async function initAll(operation, sort) {
 		for(i = 0; i < data.length; i++) altLabels[i] = data[i].x;
 		allChart.data.labels = altLabels;
 	}
+	
+	if(document.getElementById("no0s").checked) operation += " (No 0s)";
 	
 	allChart.data.datasets[allChart.data.datasets.length] = {
 		pointRadius: 0,

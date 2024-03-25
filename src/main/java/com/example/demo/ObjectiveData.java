@@ -103,6 +103,17 @@ public class ObjectiveData implements Serializable {
 	@JsonProperty("Comments")
 	@Column(columnDefinition="varchar(512)")
 	private String comments;
+	
+	@JsonProperty("StartRegion")
+	private String startRegion;
+	
+	public String getStartRegion() {
+		return startRegion;
+	}
+	
+	public void setStartRegion(String startRegion) {
+		this.startRegion = startRegion;
+	}
 
 	public Long getId() {
 		return id;

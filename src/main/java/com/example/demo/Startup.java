@@ -23,8 +23,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
@@ -41,6 +43,33 @@ public class Startup {
 		return args -> {
 			run();
 		};
+	}
+	
+	private void processData(File f) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			JsonNode node = mapper.readTree(f);
+			if(node.get("Park") != null) {
+				ObjectiveData data = mapper.readValue(f, ObjectiveData.class);
+				
+				if(objective.findByTeamNumberAndMatchNumberAndMatchType(node.get("TeamNumber").intValue(), node.get("MatchNumber").intValue(), node.get("MatchType").textValue()) == null)
+				objective.save(data);
+			} else if(node.get("HPAtAmp") != null) {
+				SubjectiveData data = mapper.readValue(f, SubjectiveData.class);
+				
+				if(subjective.findByTeamNumberAndMatchNumberAndMatchType(node.get("TeamNumber").intValue(), node.get("MatchNumber").intValue(), node.get("MatchType").textValue()) == null)
+				subjective.save(data);
+			} else {
+				PitData data = mapper.readValue(f, PitData.class);
+				pit.save(data);
+			}
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void run() throws StreamReadException, DatabindException, IOException {
@@ -67,8 +96,7 @@ public class Startup {
 		ObjectMapper mapper = new ObjectMapper();
 		for (File f : file.listFiles()) {
 			if (f.getName().endsWith(".json")) {
-				ObjectiveData data = mapper.readValue(f, ObjectiveData.class);
-				objective.save(data);
+				processData(f);
 			}
 		}
 
@@ -83,8 +111,7 @@ public class Startup {
 		}
 		for (File f : file2.listFiles()) {
 			if (f.getName().endsWith(".json")) {
-				SubjectiveData data = mapper.readValue(f, SubjectiveData.class);
-				subjective.save(data);
+				processData(f);
 			}
 		}
 
@@ -100,8 +127,7 @@ public class Startup {
 		}
 		for (File f : folder.listFiles()) {
 			if (f.getName().endsWith(".json")) {
-				PitData data = mapper.readValue(f, PitData.class);
-				pit.save(data);
+				processData(f);
 			}
 		}
 		scanner.close();

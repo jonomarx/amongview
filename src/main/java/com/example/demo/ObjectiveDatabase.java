@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import jakarta.transaction.Transactional;
+
 public interface ObjectiveDatabase extends JpaRepository<ObjectiveData, Long> {
 	public List<ObjectiveData> findAllByTeamNumberOrderByMatchTypeDescMatchNumberAsc(int teamNumber);
 	public ObjectiveData findByTeamNumberAndMatchNumberAndMatchType(int teamNumber, int matchNumber, String matchType);
