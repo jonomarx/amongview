@@ -23,12 +23,6 @@ public class PitData {
 	@JsonProperty("Interviewee")
 	private String interviewee;
 	
-	@JsonProperty("RobotHeight")
-	private String robotHeight;
-	
-	@JsonProperty("RobotLengthWidth")
-	private String robotLengthWidth;
-	
 	@JsonProperty("RobotWeight")
 	private String robotWeight;
 	
@@ -91,6 +85,19 @@ public class PitData {
 	@JsonProperty("PersonalComments")
 	@Column(columnDefinition="varchar(1024)")
 	private String personalComments;
+	
+	@JsonProperty("FitsUnderStage")
+	private boolean fitsUnderStage;
+	
+	@JsonProperty("CanFeedPass")
+	private boolean canFeedPass;
+	
+	@JsonProperty("CanDefend")
+	private boolean canDefend;
+	
+	@JsonProperty("Strategy")
+	@Column(columnDefinition="varchar(1024)")
+	private String strategy;
 
 	/**
 	 * @return the id
@@ -160,34 +167,6 @@ public class PitData {
 	 */
 	public void setInterviewee(String interviewee) {
 		this.interviewee = interviewee;
-	}
-
-	/**
-	 * @return the robotHeight
-	 */
-	public String getRobotHeight() {
-		return robotHeight;
-	}
-
-	/**
-	 * @param robotHeight the robotHeight to set
-	 */
-	public void setRobotHeight(String robotHeight) {
-		this.robotHeight = robotHeight;
-	}
-
-	/**
-	 * @return the robotLengthWidth
-	 */
-	public String getRobotLengthWidth() {
-		return robotLengthWidth;
-	}
-
-	/**
-	 * @param robotLengthWidth the robotLengthWidth to set
-	 */
-	public void setRobotLengthWidth(String robotLengthWidth) {
-		this.robotLengthWidth = robotLengthWidth;
 	}
 
 	/**

@@ -310,8 +310,7 @@ async function updateIndividual(teamNum, operation) {
 		document.getElementById("pitNumber").textContent = pit.TeamNumber;
 		document.getElementById("pitInterviewer").textContent = "Interviewer: " + pit.Interviewer;
 		document.getElementById("pitInterviewee").textContent = "Interviewee: " + pit.Interviewee;
-		document.getElementById("pitRHeight").textContent = "Robot Height: " + pit.RobotHeight;
-		document.getElementById("pitRLW").textContent = "Robot Dims: " + pit.RobotLengthWidth;
+		document.getElementById("pitUnderStage").textContent = "Fits Under Stage: " + pit.FitsUnderStage;
 		document.getElementById("pitRW").textContent = "Robot Weight: " + pit.RobotWeight;
 		
 		document.getElementById("pitVision").textContent = "Can Vision: " + pit.Vision;
@@ -331,10 +330,13 @@ async function updateIndividual(teamNum, operation) {
 		document.getElementById("pitTSpeakerCT").textContent = "Speaker Cycle Time: " + pit.CycleTimeSpeaker;
 		document.getElementById("pitGround").textContent = "Ground Pickup: " + pit.PickupFromGround;
 		document.getElementById("pitSource").textContent = "Source Pickup: " + pit.PickupFromSource;
+		document.getElementById("pitFeed").textContent = "Can Feed Pass: " + pit.CanFeedPass;
+		document.getElementById("pitDefend").textContent = "Can Defend: " + pit.CanDefend;
 		
 		document.getElementById("pitDriveXP").textContent = "Drive EXP: " + pit.DriverExperience;
 		document.getElementById("pitTComments").textContent = "Team Comments: " + pit.TeamComments;
 		document.getElementById("pitPComments").textContent = "Personal Comments: " + pit.PersonalComments;
+		document.getElementById("pitStrat").textContent = "Strategy: " + pit.Strategy;
 	} else {
 		document.getElementById("pitDiv").style.display = "none";
 	}
