@@ -390,7 +390,20 @@ async function clickOnIndividualChart(event) {
 		
 		latestTeam = individualChart.data.datasets[firstPoint._datasetIndex].label.split(' ')[0];
 		
-		matchType = (label.charAt(0) == 'Q' ? "Qualifications" : "Playoffs");
+		switch(label.charAt(0)) {
+			case 'Q':
+				matchType = "Qualifications";
+				break;
+			case 'P':
+				matchType = "Playoffs";
+				break;
+			case 'F':
+				matchType = "Finals";
+				break; 
+			default:
+				matchType = "Qualifications";
+				break;
+		}
 		match = label.substring(1);
 		
 		params = new URLSearchParams();
