@@ -352,19 +352,19 @@ async function initTeamDropdown() {
 	});
 	var text = await response.json();
 	
-	dataList = document.createElement("datalist");
-	dataList.id = "selectDataTeam";
+	dataList = document.getElementById("selectDataTeam");
 	text.forEach(option => {
 		optionElement = document.createElement("option");
-		optionElement.value = option;
+		optionElement.innerHTML = option;
 		dataList.appendChild(optionElement);
 	});
 	
-	document.body.appendChild(dataList);
+	document.getElementById("selectDataTeam").value = 948;
+	updateIndividual(948, "TeleSpeaker");
 }
 
 function loadIndividual() {
-	updateIndividual(document.getElementById("team").value, document.getElementById("individualSelector").value);
+	updateIndividual(document.getElementById("selectDataTeam").value, document.getElementById("individualSelector").value);
 }
 
 function loadAll() {
@@ -374,7 +374,7 @@ function loadAll() {
 function jumpToIndividual(teamNum, operation) {
 	individualChart.destroy();
 	individualChart = null;
-	document.getElementById("team").value = teamNum;
+	document.getElementById("selectDataTeam").value = teamNum;
 	document.getElementById("individualSelector").value = operation;
 	updateIndividual(teamNum, operation);
 }
@@ -588,6 +588,5 @@ async function clickOnAllChart(event) {
 	}
 }
 
-updateIndividual(948, "TeleSpeaker");
-initAll("TeleSpeaker", false);
 initTeamDropdown();
+initAll("TeleSpeaker", false);

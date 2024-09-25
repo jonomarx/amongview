@@ -21,8 +21,7 @@
 			<!-- all robots screen -->
 			<div id="allTeams" class="tabcontent">
 				<h1>All Robots</h1><br>
-				<input type="text" list="selectDataAll" id="allSelector" />
-					<datalist id="selectDataAll">
+					<select id="allSelector">
 						<option>TotalPoints</option>
 								<option>V AUTOS V</option>
 								<option>AutoSpeaker</option>
@@ -52,7 +51,7 @@
 								<option>EndSpotlight</option>
 								<option>EndStatus</option>
 								<option>EndPoints</options>
-					</datalist>
+					</select>
 				<button onclick="loadAll()">Load!</button>
 				<label for="sortTeams">Sort Teams?</label>
 				<input type="checkbox" id="sortTeams">
@@ -69,10 +68,9 @@
 				<div class="bloc">
 					<div class="chart">
 						<h2>Chart Data</h2><br>
-						<label for="team">Team #</label>
-						<input type="text" name="team" list="selectDataTeam" id="team" value="948">
-						<input type="text" list="selectData" id="individualSelector" />
-							<datalist id="selectData">
+						<label for="selectDataTeam">#</label>
+						<select id="selectDataTeam" value="948"></select>
+							<select id="individualSelector">
 								<option>TotalPoints</option>
 								<option>V AUTOS V</option>
 								<option>AutoSpeaker</option>
@@ -102,7 +100,7 @@
 								<option>EndSpotlight</option>
 								<option>EndStatus</option>
 								<option>EndPoints</options>
-							</datalist>
+							</select>
 						<button onclick="loadIndividual()">Load!</button>
 						<br>
 						<button onclick = "individualChart.destroy();individualChart=null">Destroy Chart</button>
