@@ -84,6 +84,40 @@ autoNoteRed["5"] = {x:116,y:47};
 autoNoteRed["6"] = {x:116,y:106};
 autoNoteRed["7"] = {x:116,y:165};
 
+let mathFuncs = {};
+mathFuncs["Average"] = (teamData, operation) => {
+	total = 0;
+	zeroes = 0;
+	teamData.forEach(item => {
+		num = dataFuncs[operation](item);
+		total += num;
+		zeroes += 0;
+	});
+	
+	average = total / (teamData.length - zeroes);
+	return average;
+}
+mathFuncs["Average (No 0s)"] = (teamData, operation) => {
+	total = 0;
+	zeroes = 0;
+	teamData.forEach(item => {
+		num = dataFuncs[operation](item);
+		total += num;
+		if(num == 0) zeroes += 1;
+	});
+	
+	average = total / (teamData.length - zeroes);
+	return average;
+}
+mathFuncs["Ceiling"] = (teamData, operation) => {
+	high = -1;
+	teamData.forEach(item => {
+		num = dataFuncs[operation](item);
+		if(num >= high) high = num;
+	});
+	return high;
+}
+
 async function initAll(operation, sort) {
 	if(dataFuncs[operation] == null) return;
 	const response = await fetch("/teams", {
@@ -107,6 +141,8 @@ async function initAll(operation, sort) {
 	data = [];
 	color = "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
 	
+	mathType = document.getElementById("allOperation").value;
+	
 	for(i = 0; i < text.length; i++) {
 		team = text[i];
 		params = new URLSearchParams();
@@ -120,16 +156,8 @@ async function initAll(operation, sort) {
 		});
 		teamData = await reply.json();
 		
-		total = 0;
-		zeroes = 0;
-		teamData.forEach(item => {
-			num = dataFuncs[operation](item);
-			total += num;
-			if(num == 0 && document.getElementById("no0s").checked) zeroes++;
-		});
-		
-		average = total / (teamData.length - zeroes);
-		data[i] = {x:team,y:average};
+		output = mathFuncs[mathType](teamData, operation);
+		data[i] = {x:team,y:output};
 	}
 	
 	allChart.data.labels = text;
@@ -143,13 +171,11 @@ async function initAll(operation, sort) {
 		allChart.data.labels = altLabels;
 	}
 	
-	if(document.getElementById("no0s").checked) operation += " (No 0s)";
-	
 	allChart.data.datasets[allChart.data.datasets.length] = {
 		pointRadius: 0,
 		backgroundColor: color,
 		data: data,
-		label: "Average " + operation,
+		label: mathType + ": " + operation,
 		order: 1,
 	};
 	allChart.update();

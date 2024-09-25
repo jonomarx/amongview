@@ -56,8 +56,13 @@
 				<label for="sortTeams">Sort Teams?</label>
 				<input type="checkbox" id="sortTeams">
 				
-				<label for="no0s">No 0s</label>
-				<input type="checkbox" id="no0s"><br>
+				<select id="allOperation">
+					<option>Average</option>
+					<option>Average (No 0s)</option>
+					<option>Ceiling</option>
+					<option>Data Availability</option>
+				</select>
+				
 				<button onclick = "allChart.destroy();allChart=null">Destroy Chart</button>
 				<canvas id="allChart" style="width:100%;max-width:1000px"></canvas>
 			</div>
