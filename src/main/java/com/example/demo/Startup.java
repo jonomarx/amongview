@@ -19,9 +19,11 @@ import com.google.gson.Gson;
 import javax.swing.JFileChooser;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
@@ -37,6 +39,9 @@ public class Startup {
 	private SubjectiveDatabase subjective;
 	@Autowired
 	private PitDatabase pit;
+	
+	@Autowired
+	private Environment env;
 
 	@Bean
 	CommandLineRunner init() {
@@ -80,8 +85,13 @@ public class Startup {
 		File folder; // Pit Directory
 		String unformattedFilePath;
 		Scanner scanner = new Scanner(System.in);
-		System.out.print("Objective Directory (blank for last used): ");
-		unformattedFilePath = scanner.nextLine();
+		
+		if(env.getProperty("oPath") == null) {
+			System.out.print("Objective Directory (blank for last used): ");
+			unformattedFilePath = scanner.nextLine();
+		} else {
+			unformattedFilePath = env.getProperty("oPath");
+		}
 		if (unformattedFilePath.equals("")) {
 			file = new File(cfg.getObjPath());
 			System.out.println(cfg.getObjPath());
@@ -99,9 +109,13 @@ public class Startup {
 				processData(f);
 			}
 		}
-
-		System.out.print("Subjective Directory (blank for last used): ");
-		unformattedFilePath = scanner.nextLine();
+		
+		if(env.getProperty("sPath") == null) {
+			System.out.print("Subjective Directory (blank for last used): ");
+			unformattedFilePath = scanner.nextLine();
+		} else {
+			unformattedFilePath = env.getProperty("sPath");
+		}
 		if (unformattedFilePath.equals("")) {
 			file2 = new File(cfg.getSubjPath());
 			System.out.println(cfg.getSubjPath());
@@ -114,10 +128,15 @@ public class Startup {
 				processData(f);
 			}
 		}
-
-		System.out.print("Pit Directory (blank for last used): ");
+		
 		pit.deleteAll();
-		unformattedFilePath = scanner.nextLine();
+		
+		if(env.getProperty("pPath") == null) {
+			System.out.print("Pit Directory (blank for last used): ");
+			unformattedFilePath = scanner.nextLine();
+		} else {
+			unformattedFilePath = env.getProperty("pPath");
+		}
 		if (unformattedFilePath.equals("")) {
 			folder = new File(cfg.getPitPath());
 			System.out.println(cfg.getPitPath());
