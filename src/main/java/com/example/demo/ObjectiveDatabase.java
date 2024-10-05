@@ -13,4 +13,7 @@ public interface ObjectiveDatabase extends JpaRepository<ObjectiveData, Long> {
 	
 	@Query("SELECT DISTINCT od.teamNumber FROM ObjectiveData od ORDER BY od.teamNumber ASC")
 	public List<Integer> findAllTeams();
+	
+	@Query("SELECT MAX(matchNumber) FROM ObjectiveData")
+	public int getMax();
 }

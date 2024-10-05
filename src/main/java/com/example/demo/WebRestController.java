@@ -39,6 +39,11 @@ public class WebRestController {
 		return ResponseEntity.of(Optional.of(result));
 	}
 	
+	@GetMapping(value="/objMAX", produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> max() {
+		return ResponseEntity.of(Optional.of(objective.getMax()));
+	}
+	
 	@GetMapping(value="/match",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> qual(@RequestParam("teamNum") int teamNum, @RequestParam("match") int match, @RequestParam("type") String type, @RequestParam("data") String dataType) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();

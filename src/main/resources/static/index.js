@@ -369,6 +369,16 @@ async function updateIndividual(teamNum, operation) {
 }
 
 async function initTeamDropdown() {
+	const maxNum = await fetch("/objMAX", {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		credential: 'include',
+	});
+	var value = await maxNum.text();
+	document.getElementById("getDataWarning").textContent = "Update Data At Match " + (Number(value) + 6) + ", Human Player.";
+	
 	const response = await fetch("/teams", {
 		method: 'GET',
 		headers: {
@@ -379,13 +389,18 @@ async function initTeamDropdown() {
 	var text = await response.json();
 	
 	dataList = document.getElementById("selectDataTeam");
+	autosList = document.getElementById("autosInput");
 	text.forEach(option => {
 		optionElement = document.createElement("option");
 		optionElement.innerHTML = option;
 		dataList.appendChild(optionElement);
+		
+		option2 = document.createElement("option");
+		option2.innerHTML = option;
+		autosList.appendChild(option2);
 	});
 	
-	document.getElementById("selectDataTeam").value = 948;
+	dataList.value = 948;
 	updateIndividual(948, "TeleSpeaker");
 }
 
@@ -612,6 +627,146 @@ async function clickOnAllChart(event) {
 		jumpToIndividual(value.x, operation);
 		document.getElementById("clickIndividual").click();
 	}
+}
+
+function clearAutos() {
+	document.getElementById("autosField").replaceChildren();
+}
+
+async function loadAutos() {
+	teamNum = document.getElementById("autosInput").value;
+	field = document.getElementById("autosField");
+	field.replaceChildren();
+	
+	const params = new URLSearchParams();
+	params.append("teamNum", teamNum);
+	const response = await fetch("/obj?"+params.toString(), {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		credentials: 'include',
+	});
+	var text = await response.json();
+	
+	for(const data of text) {
+		theDiv = document.createElement("div");
+		
+		h2 = document.createElement("h2");
+		h2.textContent = data.MatchType.charAt(0) + "" + data.MatchNumber;
+		
+		canvas = document.createElement("canvas");
+		ctx = canvas.getContext("2d");
+		ctx.canvas.width = 120;
+		ctx.canvas.height = 600;
+		
+		if(data.AllianceColor == "Red") {
+			image = document.getElementById("RedStart");
+			ctx.fillStyle = "red";
+		} else {
+			image = document.getElementById("BlueStart");
+			ctx.fillStyle = "blue";
+		}
+		
+		ctx.fillRect(0,0,120,600);
+		ctx.drawImage(image, 0, 0, 120, 600);
+		
+		coords = data.StartPos.split(", ")
+		ctx.fillStyle="black";
+		ctx.beginPath();
+		ctx.arc(coords[1]*10, coords[0]*10, 10, 0, 2 * Math.PI);
+		ctx.fill();
+		
+		// subj!
+		params2 = new URLSearchParams();
+		params2.append("teamNum", teamNum);
+		params2.append("match", data.MatchNumber);
+		params2.append("type", data.MatchType);
+		params2.append("data", "Subjective");
+		const response2 = await fetch("/match?"+params2.toString(), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			credentials: 'include',
+		});
+		data2 = await response2.json();
+		
+		canvas2 = document.createElement("canvas");
+		ctx2 = canvas2.getContext("2d");
+		ctx2.canvas.width = 356;
+		ctx2.canvas.height = 333;
+		
+		// THE PERSPECTIVE IS FLIPPED, DONT PANIC.
+		if(data.AllianceColor == "Blue") {
+			image = document.getElementById("RedNotes");
+			//color = "red";
+			color = "blue";
+			coordTable = autoNoteRed;
+		} else {
+			image = document.getElementById("BlueNotes");
+			//color = "blue";
+			color = "red"
+			coordTable = autoNoteBlue;
+		}
+		
+		ctx2.fillStyle = color;
+		ctx2.fillRect(0,0,356,333);
+		ctx2.drawImage(image, 0, 0, 356, 333);
+		
+		if(data2 != null) {
+			dataPoints = data2.AutoPickups.split(", ");
+			dataPoints.forEach(item => {
+				ctx2.fillStyle="black";
+				ctx2.beginPath();
+				coords = coordTable[item];
+				ctx2.arc(coords["x"], coords["y"], 12, 0, 2*Math.PI);
+				ctx2.fill();
+			});
+			
+			started = false;
+			ctx2.lineWidth = 4;
+			ctx2.beginPath();
+			dataPoints.forEach(item => {
+				coords = coordTable[item];
+				if(!started) {
+					ctx2.moveTo(coords["x"], coords["y"]);
+					started = true;
+				} else {
+					ctx2.lineTo(coords["x"], coords["y"]);
+				}
+			})
+			ctx2.stroke();
+			
+			ctx2.fillStyle = color;
+			ctx2.font = "bold 20px Sans Serif";
+			i = 0;
+			iTable = ["A","B","C","D","E","F","G","H"];
+			dataPoints.forEach(item => {
+				coords = coordTable[item];
+				ctx2.fillText(iTable[i], coords["x"]-5, coords["y"]+5);
+				i++;
+			});
+		} else {
+			ctx2.fillStyle = "black";
+			ctx2.font = "bold 20px Sans Serif";
+			ctx2.fillText("NO DATA", 100,100);
+		}
+		theDiv.classList.add("autoColumn");
+		theDiv.appendChild(h2);
+		//theDiv.classList.add("bigColumn");
+		
+		div1 = document.createElement("div");
+		div1.classList.add("bigColumn");
+		div1.appendChild(canvas);
+		
+		div2 = document.createElement("div");
+		div2.classList.add("bigColumn");
+		div2.appendChild(canvas2);
+		theDiv.appendChild(div1);
+		theDiv.appendChild(div2);
+		field.appendChild(theDiv);
+	};
 }
 
 initTeamDropdown();

@@ -37,6 +37,11 @@ h1,h2,h3,h4,p,label {
 	max-width: 500px;
 }
 
+.autoColumn {
+	float: left;
+	padding: 20px 20px;
+}
+
 .bloc {
 	display: block;
 	clear: left;

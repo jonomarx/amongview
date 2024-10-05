@@ -13,10 +13,14 @@
 			<img id="RedNotes" src="HalfMapRed.png" width="356" height="333" />
 			<img id="BlueNotes" src="HalfMapBlue.png" width="356" height="333" />
 		</div>
+		
+		<h1 style="color: red" id="getDataWarning"></h1>
+		
 		<!-- navigator -->
 		<div class="tab">
 			<button id="clickAll" class="tabLinks" onclick="openTab(event, 'allTeams')">All Teams</button>
 			<button id="clickIndividual" class="tabLinks" onclick="openTab(event, 'individual')">Individual</button>
+			<button id="clickAutos" class="tabLInks" onclick="openTab(event, 'autos')">Autos</button>
 		
 			<!-- all robots screen -->
 			<div id="allTeams" class="tabcontent">
@@ -275,6 +279,15 @@
 						<p id="sComments">Comments</p>
 					</div>
 				</div>
+			</div>
+			<div id="autos" class="tabcontent">
+				<h1>Autos</h1>
+				<label for="autosInput">Team #</label>
+				<select id="autosInput">
+				</select>
+				<button id="loadAutos" onclick="loadAutos()">Load!</button>
+				<button id="clearAutos" onclick="clearAutos()">Clear</button>
+				<div id="autosField"></div>
 			</div>
 		</div>
 	</body>
